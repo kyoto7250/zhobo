@@ -48,7 +48,7 @@ impl CompletionComponent {
     fn next(&mut self) {
         let i = match self.state.selected() {
             Some(i) => {
-                if i + 1 >= self.filterd_candidates().count() {
+                if i + 1 >= self.filtered_candidates().count() {
                     0
                 } else {
                     i + 1
@@ -63,7 +63,7 @@ impl CompletionComponent {
         let i = match self.state.selected() {
             Some(i) => {
                 if i == 0 {
-                    self.filterd_candidates()
+                    self.filtered_candidates()
                         .count()
                         .checked_sub(1)
                         .unwrap_or(0)
@@ -76,7 +76,7 @@ impl CompletionComponent {
         self.state.select(Some(i));
     }
 
-    fn filterd_candidates(&self) -> impl Iterator<Item = &String> {
+    fn filtered_candidates(&self) -> impl Iterator<Item = &String> {
         self.candidates.iter().filter(move |c| {
             (c.starts_with(self.word.to_lowercase().as_str())
                 || c.starts_with(self.word.to_uppercase().as_str()))
@@ -85,7 +85,7 @@ impl CompletionComponent {
     }
 
     pub fn selected_candidate(&self) -> Option<String> {
-        self.filterd_candidates()
+        self.filtered_candidates()
             .collect::<Vec<&String>>()
             .get(self.state.selected()?)
             .map(|c| c.to_string())
@@ -101,7 +101,7 @@ impl MovableComponent for CompletionComponent {
         if !self.word.is_empty() {
             let width = 30;
             let candidates = self
-                .filterd_candidates()
+                .filtered_candidates()
                 .map(|c| ListItem::new(c.to_string()))
                 .collect::<Vec<ListItem>>();
             if candidates.clone().is_empty() {
@@ -148,37 +148,37 @@ mod test {
     use super::{CompletionComponent, KeyConfig};
 
     #[test]
-    fn test_filterd_candidates_lowercase() {
+    fn test_filtered_candidates_lowercase() {
         assert_eq!(
             CompletionComponent::new(KeyConfig::default(), "an", false)
-                .filterd_candidates()
+                .filtered_candidates()
                 .collect::<Vec<&String>>(),
             vec![&"AND".to_string()]
         );
     }
 
     #[test]
-    fn test_filterd_candidates_uppercase() {
+    fn test_filtered_candidates_uppercase() {
         assert_eq!(
             CompletionComponent::new(KeyConfig::default(), "AN", false)
-                .filterd_candidates()
+                .filtered_candidates()
                 .collect::<Vec<&String>>(),
             vec![&"AND".to_string()]
         );
     }
 
     #[test]
-    fn test_filterd_candidates_multiple_candidates() {
+    fn test_filtered_candidates_multiple_candidates() {
         assert_eq!(
             CompletionComponent::new(KeyConfig::default(), "n", false)
-                .filterd_candidates()
+                .filtered_candidates()
                 .collect::<Vec<&String>>(),
             vec![&"NOT".to_string(), &"NULL".to_string()]
         );
 
         assert_eq!(
             CompletionComponent::new(KeyConfig::default(), "N", false)
-                .filterd_candidates()
+                .filtered_candidates()
                 .collect::<Vec<&String>>(),
             vec![&"NOT".to_string(), &"NULL".to_string()]
         );
