@@ -26,7 +26,10 @@
 | <kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd>, <kbd>l</kbd> | Scroll left/down/up/right |
 | <kbd>Ctrl</kbd> + <kbd>u</kbd>, <kbd>Ctrl</kbd> + <kbd>d</kbd> | Scroll up/down multiple lines |
 | <kbd>g</kbd> , <kbd>G</kbd> | Scroll to top/bottom |
+| <kbd>^</kbd>, <kbd>$</kbd> | Move to head/tail of line |
+| <kbd>s</kbd> | Sort by selected column |
 | <kbd>H</kbd>, <kbd>J</kbd>, <kbd>K</kbd>, <kbd>L</kbd> | Extend selection by one cell left/down/up/right |
+| <kbd>V</kbd> | Extend selection by horizontal line |
 | <kbd>y</kbd> | Copy a cell value |
 | <kbd>←</kbd>, <kbd>→</kbd> | Move focus to left/right |
 | <kbd>c</kbd> | Move focus to connections |
@@ -42,42 +45,21 @@
 
 The location of the file depends on your OS:
 
-- macOS: `$HOME/.config/gobang/config.toml`
-- Linux: `$HOME/.config/gobang/config.toml`
-- Windows: `%APPDATA%/gobang/config.toml`
+- macOS: `$HOME/.config/zhobo/config.toml`
+- Linux: `$HOME/.config/zhobo/config.toml`
+- Windows: `%APPDATA%/zhobo/config.toml`
 
-The following is a sample config.toml file:
-
-```toml
-[[conn]]
-type = "mysql"
-user = "root"
-host = "localhost"
-port = 3306
-
-[[conn]]
-type = "mysql"
-user = "root"
-host = "localhost"
-port = 3306
-password = "password"
-database = "foo"
-name = "mysql Foo DB"
-
-[[conn]]
-type = "postgres"
-user = "root"
-host = "localhost"
-port = 5432
-database = "bar"
-name = "postgres Bar DB"
-
-[[conn]]
-type = "sqlite"
-path = "/path/to/baz.db"
-```
+Sample config.toml file is `examples/config.toml`:
 
 ### custom keymap
+
+The location of the file depends on your OS:
+
+- macOS: `$HOME/.config/zhobo/key_bind.ron`
+- Linux: `$HOME/.config/zhobo/key_bind.ron`
+- Windows: `%APPDATA%/zhobo/key_bind.ron`
+
+Sample config.toml file is `examples/key_bind.ron`:
 
 ## contribution
 
