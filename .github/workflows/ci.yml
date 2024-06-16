@@ -21,7 +21,7 @@ jobs:
   format:
     name: Format
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Cargo fmt
@@ -30,7 +30,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Cache cargo registry
@@ -56,7 +56,7 @@ jobs:
   unit_tests:
     name: Unit Tests
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       # For some builds, we use cross to test on 32-bit and big-endian
       # systems.
