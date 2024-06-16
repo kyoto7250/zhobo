@@ -17,6 +17,9 @@
 ## homebrew
 
 ## cargo
+```bash
+cargo install zhobo
+```
 
 ## default keymap
 
