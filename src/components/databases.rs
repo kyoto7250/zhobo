@@ -6,10 +6,10 @@ use crate::components::command::{self, CommandInfo};
 use crate::config::{Connection, KeyConfig};
 use crate::database::Pool;
 use crate::event::Key;
+use crate::tree::{Database, DatabaseTree, DatabaseTreeItem};
 use crate::ui::common_nav;
 use crate::ui::scrolllist::draw_list_block;
 use anyhow::Result;
-use database_tree::{Database, DatabaseTree, DatabaseTreeItem};
 use std::collections::BTreeSet;
 use std::convert::From;
 use tui::{
@@ -275,10 +275,10 @@ fn tree_nav(tree: &mut DatabaseTree, key: Key, key_config: &KeyConfig) -> bool {
 #[cfg(test)]
 mod test {
     use super::{Color, Database, DatabaseTreeItem, DatabasesComponent, Span, Spans, Style};
-    use database_tree::Table;
+    use crate::tree::Table;
 
     #[test]
-    fn test_tree_database_tree_item_to_span() {
+    fn test_tree_tree_item_to_span() {
         const WIDTH: u16 = 10;
         assert_eq!(
             DatabasesComponent::tree_item_to_span(

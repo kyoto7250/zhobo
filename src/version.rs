@@ -44,7 +44,7 @@ impl fmt::Display for Version {
             self.patch,
             self.pre
                 .as_ref()
-                .map_or(String::new(), |pre| format!("-{}", pre.to_string()))
+                .map_or(String::new(), |pre| format!("-{}", pre))
         )
     }
 }

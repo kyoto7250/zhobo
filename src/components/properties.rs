@@ -5,9 +5,9 @@ use crate::components::TableComponent;
 use crate::config::KeyConfig;
 use crate::database::Pool;
 use crate::event::Key;
+use crate::tree::{Database, Table};
 use anyhow::Result;
 use async_trait::async_trait;
-use database_tree::{Database, Table};
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},
@@ -74,7 +74,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
-                columns.get(0).unwrap().fields(),
+                columns.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
             );
@@ -87,7 +87,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
-                constraints.get(0).unwrap().fields(),
+                constraints.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
             );
@@ -100,7 +100,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
-                foreign_keys.get(0).unwrap().fields(),
+                foreign_keys.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
             );
@@ -113,7 +113,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
-                indexes.get(0).unwrap().fields(),
+                indexes.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
             );

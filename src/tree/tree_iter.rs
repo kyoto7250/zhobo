@@ -1,4 +1,4 @@
-use crate::{item::DatabaseTreeItem, treeitems_iter::TreeItemsIterator};
+use crate::tree::{item::DatabaseTreeItem, treeitems_iter::TreeItemsIterator};
 
 pub struct TreeIterator<'a> {
     item_iter: TreeItemsIterator<'a>,

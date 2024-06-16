@@ -1,11 +1,10 @@
-use crate::{
+use crate::tree::{
     databasetreeitems::DatabaseTreeItems, error::Result, item::DatabaseTreeItemKind,
     tree_iter::TreeIterator,
 };
-use crate::{Database, Table};
+use crate::tree::{Database, Table};
 use std::{collections::BTreeSet, usize};
 
-///
 #[derive(Copy, Clone, Debug)]
 pub enum MoveSelection {
     Up,
@@ -34,7 +33,7 @@ pub struct DatabaseTree {
 }
 
 impl DatabaseTree {
-    pub fn new(list: &[crate::Database], collapsed: &BTreeSet<&String>) -> Result<Self> {
+    pub fn new(list: &[crate::tree::Database], collapsed: &BTreeSet<&String>) -> Result<Self> {
         let mut new_self = Self {
             items: DatabaseTreeItems::new(list, collapsed)?,
             selection: if list.is_empty() { None } else { Some(0) },
@@ -55,11 +54,6 @@ impl DatabaseTree {
         new_self
     }
 
-    pub fn collapse_but_root(&mut self) {
-        self.items.collapse(0, true);
-        self.items.expand(0, false);
-    }
-
     /// iterates visible elements starting from `start_index_visual`
     pub fn iterate(&self, start_index_visual: usize, max_amount: usize) -> TreeIterator<'_> {
         let start = self
@@ -70,11 +64,6 @@ impl DatabaseTree {
 
     pub const fn visual_selection(&self) -> Option<&VisualSelection> {
         self.visual_selection.as_ref()
-    }
-
-    pub fn selected_item(&self) -> Option<&crate::DatabaseTreeItem> {
-        self.selection
-            .and_then(|index| self.items.tree_items.get(index))
     }
 
     pub fn selected_table(&self) -> Option<(Database, Table)> {
@@ -88,18 +77,6 @@ impl DatabaseTree {
                 DatabaseTreeItemKind::Schema { .. } => None,
             }
         })
-    }
-
-    pub fn collapse_recursive(&mut self) {
-        if let Some(selection) = self.selection {
-            self.items.collapse(selection, true);
-        }
-    }
-
-    pub fn expand_recursive(&mut self) {
-        if let Some(selection) = self.selection {
-            self.items.expand(selection, true);
-        }
     }
 
     pub fn move_selection(&mut self, dir: MoveSelection) -> bool {
@@ -366,7 +343,7 @@ impl DatabaseTree {
 
 #[cfg(test)]
 mod test {
-    use crate::{Database, DatabaseTree, MoveSelection, Schema, Table};
+    use crate::tree::{Database, DatabaseTree, MoveSelection, Schema, Table};
     use std::collections::BTreeSet;
 
     impl Table {

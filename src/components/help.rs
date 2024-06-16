@@ -59,7 +59,7 @@ impl DrawableComponent for HelpComponent {
 
             f.render_widget(
                 Paragraph::new(Spans::from(vec![Span::styled(
-                    format!("gobang {}", Version::new()),
+                    format!("zhobo {}", Version::new()),
                     Style::default(),
                 )]))
                 .alignment(Alignment::Right),
@@ -151,7 +151,7 @@ impl HelpComponent {
                 processed += 1;
 
                 txt.push(Spans::from(Span::styled(
-                    format!(" {}{:w$}", command_info.text.name, w = width),
+                    format!(" {}{w:w$}", command_info.text.name, w = width),
                     if is_selected {
                         Style::default().bg(Color::Blue)
                     } else {

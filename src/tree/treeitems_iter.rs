@@ -1,4 +1,4 @@
-use crate::{databasetreeitems::DatabaseTreeItems, item::DatabaseTreeItem};
+use crate::tree::{databasetreeitems::DatabaseTreeItems, item::DatabaseTreeItem};
 
 pub struct TreeItemsIterator<'a> {
     tree: &'a DatabaseTreeItems,
@@ -10,10 +10,10 @@ pub struct TreeItemsIterator<'a> {
 impl<'a> TreeItemsIterator<'a> {
     pub const fn new(tree: &'a DatabaseTreeItems, start: usize, max_amount: usize) -> Self {
         TreeItemsIterator {
-            max_amount,
-            increments: None,
-            index: start,
             tree,
+            index: start,
+            increments: None,
+            max_amount,
         }
     }
 }

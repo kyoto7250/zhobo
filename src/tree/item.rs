@@ -1,4 +1,4 @@
-use crate::{Database, Schema, Table};
+use crate::tree::{Database, Schema, Table};
 
 #[derive(Debug, Clone)]
 pub struct TreeItemInfo {
@@ -17,10 +17,6 @@ impl TreeItemInfo {
 
     pub const fn indent(&self) -> u8 {
         self.indent
-    }
-
-    pub fn unindent(&mut self) {
-        self.indent = self.indent.saturating_sub(1);
     }
 
     pub fn set_visible(&mut self, visible: bool) {

@@ -1,8 +1,8 @@
 use super::{Component, DrawableComponent, EventState};
 use crate::components::command::CommandInfo;
 use crate::event::Key;
+use crate::tree::Table;
 use anyhow::Result;
-use database_tree::Table;
 use tui::{
     backend::Backend,
     layout::Rect,

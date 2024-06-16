@@ -1,6 +1,6 @@
-use crate::{error::Result, treeitems_iter::TreeItemsIterator};
-use crate::{item::DatabaseTreeItemKind, DatabaseTreeItem};
-use crate::{Child, Database};
+use crate::tree::{error::Result, treeitems_iter::TreeItemsIterator};
+use crate::tree::{item::DatabaseTreeItemKind, DatabaseTreeItem};
+use crate::tree::{Child, Database};
 use std::{
     collections::{BTreeSet, HashMap},
     usize,
@@ -12,7 +12,6 @@ pub struct DatabaseTreeItems {
 }
 
 impl DatabaseTreeItems {
-    ///
     pub fn new(list: &[Database], collapsed: &BTreeSet<&String>) -> Result<Self> {
         Ok(Self {
             tree_items: Self::create_items(list, collapsed)?,
