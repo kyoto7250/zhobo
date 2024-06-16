@@ -3,8 +3,7 @@ use crate::components::command::CommandInfo;
 use crate::config::KeyConfig;
 use crate::event::Key;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Alignment, Rect},
     widgets::{Block, Borders, Clear, Paragraph, Wrap},
     Frame,
@@ -28,7 +27,7 @@ impl DebugComponent {
 }
 
 impl DrawableComponent for DebugComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, _area: Rect, _focused: bool) -> Result<()> {
+    fn draw(&self, f: &mut Frame, _area: Rect, _focused: bool) -> Result<()> {
         if true {
             let width = 65;
             let height = 10;

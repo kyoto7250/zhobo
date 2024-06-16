@@ -5,15 +5,14 @@ use crate::event::Key;
 use crate::version::Version;
 use anyhow::Result;
 use itertools::Itertools;
-use std::convert::From;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Block, BorderType, Borders, Clear, Paragraph},
     Frame,
 };
+use std::convert::From;
 
 pub struct HelpComponent {
     cmds: Vec<CommandInfo>,
@@ -23,7 +22,7 @@ pub struct HelpComponent {
 }
 
 impl DrawableComponent for HelpComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, _area: Rect, _focused: bool) -> Result<()> {
+    fn draw(&self, f: &mut Frame, _area: Rect, _focused: bool) -> Result<()> {
         if self.visible {
             const SIZE: (u16, u16) = (65, 24);
             let scroll_threshold = SIZE.1 / 3;
@@ -58,7 +57,7 @@ impl DrawableComponent for HelpComponent {
             );
 
             f.render_widget(
-                Paragraph::new(Spans::from(vec![Span::styled(
+                Paragraph::new(Line::from(vec![Span::styled(
                     format!("zhobo {}", Version::new()),
                     Style::default(),
                 )]))
@@ -135,13 +134,13 @@ impl HelpComponent {
         self.selection = new_selection.min(self.cmds.len().saturating_sub(1) as u16);
     }
 
-    fn get_text(&self, width: usize) -> Vec<Spans> {
-        let mut txt: Vec<Spans> = Vec::new();
+    fn get_text(&self, width: usize) -> Vec<Line> {
+        let mut txt: Vec<Line> = Vec::new();
 
         let mut processed = 0;
 
-        for (key, group) in &self.cmds.iter().group_by(|e| e.text.group) {
-            txt.push(Spans::from(Span::styled(
+        for (key, group) in &self.cmds.iter().chunk_by(|e| e.text.group) {
+            txt.push(Line::from(Span::styled(
                 key.to_string(),
                 Style::default().add_modifier(Modifier::REVERSED),
             )));
@@ -150,7 +149,7 @@ impl HelpComponent {
                 let is_selected = self.selection == processed;
                 processed += 1;
 
-                txt.push(Spans::from(Span::styled(
+                txt.push(Line::from(Span::styled(
                     format!(" {}{w:w$}", command_info.text.name, w = width),
                     if is_selected {
                         Style::default().bg(Color::Blue)
@@ -167,7 +166,7 @@ impl HelpComponent {
 
 #[cfg(test)]
 mod test {
-    use super::{Color, CommandInfo, HelpComponent, KeyConfig, Modifier, Span, Spans, Style};
+    use super::{Color, CommandInfo, HelpComponent, KeyConfig, Line, Modifier, Span, Style};
 
     #[test]
     fn test_get_text() {
@@ -181,15 +180,15 @@ mod test {
         assert_eq!(
             component.get_text(width),
             vec![
-                Spans::from(Span::styled(
+                Line::from(Span::styled(
                     "-- General --",
                     Style::default().add_modifier(Modifier::REVERSED)
                 )),
-                Spans::from(Span::styled(
+                Line::from(Span::styled(
                     " Scroll up/down/left/right [k,j,h,l]  3",
                     Style::default().bg(Color::Blue)
                 )),
-                Spans::from(Span::styled(" Filter [/]  3", Style::default()))
+                Line::from(Span::styled(" Filter [/]  3", Style::default()))
             ]
         );
     }

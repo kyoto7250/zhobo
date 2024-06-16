@@ -3,11 +3,10 @@ use crate::components::command::CommandInfo;
 use crate::event::Key;
 use crate::tree::Table;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
-    text::Spans,
+    text::Line,
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
@@ -43,8 +42,8 @@ impl DatabaseFilterComponent {
 }
 
 impl DrawableComponent for DatabaseFilterComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
-        let query = Paragraph::new(Spans::from(format!(
+    fn draw(&self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
+        let query = Paragraph::new(Line::from(format!(
             "{:w$}",
             if self.input.is_empty() && !focused {
                 "Filter tables".to_string()

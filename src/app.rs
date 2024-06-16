@@ -12,8 +12,7 @@ use crate::components::{
 use crate::config::Config;
 use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool, RECORDS_LIMIT_PER_PAGE};
 use crate::event::Key;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     Frame,
 };
@@ -56,7 +55,7 @@ impl App {
         }
     }
 
-    pub fn draw<B: Backend>(&mut self, f: &mut Frame<'_, B>) -> anyhow::Result<()> {
+    pub fn draw(&mut self, f: &mut Frame) -> anyhow::Result<()> {
         if let Focus::ConnectionList = self.focus {
             self.connections.draw(
                 f,

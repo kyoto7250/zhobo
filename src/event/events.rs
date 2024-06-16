@@ -2,7 +2,6 @@ use crate::event::Key;
 use crossterm::event;
 use std::{sync::mpsc, thread, time::Duration};
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub struct EventConfig {
     pub exit_key: Key,

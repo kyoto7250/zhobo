@@ -3,11 +3,10 @@ use crate::components::command::CommandInfo;
 use crate::event::Key;
 use crate::tree::Table;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
@@ -43,8 +42,8 @@ impl TableStatusComponent {
 }
 
 impl DrawableComponent for TableStatusComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
-        let status = Paragraph::new(Spans::from(vec![
+    fn draw(&self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
+        let status = Paragraph::new(Line::from(vec![
             Span::from(format!(
                 "rows: {}, ",
                 self.row_count.map_or("-".to_string(), |c| c.to_string())

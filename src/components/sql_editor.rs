@@ -9,8 +9,7 @@ use crate::event::Key;
 use crate::ui::stateful_paragraph::{ParagraphState, StatefulParagraph};
 use anyhow::Result;
 use async_trait::async_trait;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph, Wrap},
@@ -141,7 +140,7 @@ impl SqlEditorComponent {
 }
 
 impl StatefulDrawableComponent for SqlEditorComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints(if matches!(self.focus, Focus::Table) {

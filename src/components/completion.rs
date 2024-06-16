@@ -3,8 +3,7 @@ use crate::components::command::CommandInfo;
 use crate::config::KeyConfig;
 use crate::event::Key;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
     widgets::{Block, Borders, Clear, List, ListItem, ListState},
@@ -95,14 +94,7 @@ impl CompletionComponent {
 }
 
 impl MovableComponent for CompletionComponent {
-    fn draw<B: Backend>(
-        &mut self,
-        f: &mut Frame<B>,
-        area: Rect,
-        _focused: bool,
-        x: u16,
-        y: u16,
-    ) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, area: Rect, _focused: bool, x: u16, y: u16) -> Result<()> {
         if !self.word.is_empty() {
             let width = 30;
             let candidates = self

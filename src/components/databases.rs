@@ -10,16 +10,15 @@ use crate::tree::{Database, DatabaseTree, DatabaseTreeItem};
 use crate::ui::common_nav;
 use crate::ui::scrolllist::draw_list_block;
 use anyhow::Result;
-use std::collections::BTreeSet;
-use std::convert::From;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Block, Borders},
     Frame,
 };
+use std::collections::BTreeSet;
+use std::convert::From;
 
 // ▸
 const FOLDER_ICON_COLLAPSED: &str = "\u{25b8}";
@@ -81,7 +80,7 @@ impl DatabasesComponent {
         selected: bool,
         width: u16,
         filter: Option<String>,
-    ) -> Spans<'static> {
+    ) -> Line<'static> {
         let name = item.kind().name();
         let indent = item.info().indent();
 
@@ -105,7 +104,7 @@ impl DatabasesComponent {
             if item.kind().is_table() && name.contains(&filter) {
                 let (first, rest) = &name.split_at(name.find(filter.as_str()).unwrap_or(0));
                 let (middle, last) = &rest.split_at(filter.len().clamp(0, rest.len()));
-                return Spans::from(vec![
+                return Line::from(vec![
                     Span::styled(
                         format!("{}{}{}", indent_str, arrow, first),
                         if selected {
@@ -134,7 +133,7 @@ impl DatabasesComponent {
             }
         }
 
-        Spans::from(Span::styled(
+        Line::from(Span::styled(
             format!("{}{}{:w$}", indent_str, arrow, name, w = width as usize),
             if selected {
                 Style::default().bg(Color::Blue)
@@ -144,7 +143,7 @@ impl DatabasesComponent {
         ))
     }
 
-    fn draw_tree<B: Backend>(&self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw_tree(&self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         f.render_widget(
             Block::default()
                 .title("Databases")
@@ -206,7 +205,7 @@ impl DatabasesComponent {
 }
 
 impl DrawableComponent for DatabasesComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let chunks = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([Constraint::Percentage(100)].as_ref())
@@ -274,7 +273,7 @@ fn tree_nav(tree: &mut DatabaseTree, key: Key, key_config: &KeyConfig) -> bool {
 
 #[cfg(test)]
 mod test {
-    use super::{Color, Database, DatabaseTreeItem, DatabasesComponent, Span, Spans, Style};
+    use super::{Color, Database, DatabaseTreeItem, DatabasesComponent, Line, Span, Style};
     use crate::tree::Table;
 
     #[test]
@@ -293,7 +292,7 @@ mod test {
                 WIDTH,
                 None,
             ),
-            Spans::from(vec![Span::raw(format!(
+            Line::from(vec![Span::raw(format!(
                 "\u{25b8}{:w$}",
                 "foo",
                 w = WIDTH as usize
@@ -313,7 +312,7 @@ mod test {
                 WIDTH,
                 None,
             ),
-            Spans::from(vec![Span::styled(
+            Line::from(vec![Span::styled(
                 format!("\u{25b8}{:w$}", "foo", w = WIDTH as usize),
                 Style::default().bg(Color::Blue)
             )])
@@ -342,7 +341,7 @@ mod test {
                 WIDTH,
                 None,
             ),
-            Spans::from(vec![Span::raw(format!(
+            Line::from(vec![Span::raw(format!(
                 "  {:w$}",
                 "bar",
                 w = WIDTH as usize
@@ -368,7 +367,7 @@ mod test {
                 WIDTH,
                 None,
             ),
-            Spans::from(Span::styled(
+            Line::from(Span::styled(
                 format!("  {:w$}", "bar", w = WIDTH as usize),
                 Style::default().bg(Color::Blue),
             ))
@@ -397,7 +396,7 @@ mod test {
                 WIDTH,
                 Some("rb".to_string()),
             ),
-            Spans::from(vec![
+            Line::from(vec![
                 Span::raw(format!("  {}", "ba")),
                 Span::styled("rb", Style::default().fg(Color::Blue)),
                 Span::raw(format!("{:w$}", "az", w = WIDTH as usize))
@@ -423,7 +422,7 @@ mod test {
                 WIDTH,
                 Some("rb".to_string()),
             ),
-            Spans::from(vec![
+            Line::from(vec![
                 Span::styled(format!("  {}", "ba"), Style::default().bg(Color::Blue)),
                 Span::styled("rb", Style::default().bg(Color::Blue).fg(Color::Blue)),
                 Span::styled(

@@ -1,3 +1,4 @@
+use ratatui::text::{Line, Span};
 use std::ops::Range;
 use syntect::{
     highlighting::{
@@ -5,7 +6,6 @@ use syntect::{
     },
     parsing::{ParseState, ScopeStack, SyntaxSet},
 };
-use tui::text::{Span, Spans};
 
 struct SyntaxLine {
     items: Vec<(Style, usize, Range<usize>)>,
@@ -28,14 +28,15 @@ impl SyntaxText {
 
         for (number, line) in text.lines().enumerate() {
             let ops = state.parse_line(line, &syntax_set);
-            let iter =
-                RangedHighlightIterator::new(&mut highlight_state, &ops[..], line, &highlighter);
-
-            syntax_lines.push(SyntaxLine {
-                items: iter
-                    .map(|(style, _, range)| (style, number, range))
-                    .collect(),
-            });
+            if let Ok(vec) = ops {
+                let iter =
+                    RangedHighlightIterator::new(&mut highlight_state, &vec, line, &highlighter);
+                syntax_lines.push(SyntaxLine {
+                    items: iter
+                        .map(|(style, _, range)| (style, number, range))
+                        .collect(),
+                });
+            }
         }
 
         Self {
@@ -44,17 +45,17 @@ impl SyntaxText {
         }
     }
 
-    pub fn convert(&self) -> tui::text::Text<'_> {
-        let mut result_lines: Vec<Spans> = Vec::with_capacity(self.lines.len());
+    pub fn convert(&self) -> ratatui::text::Text<'_> {
+        let mut result_lines: Vec<Line> = Vec::with_capacity(self.lines.len());
 
         for (syntax_line, line_content) in self.lines.iter().zip(self.text.lines()) {
-            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
+            let mut line_span = Line::from(Vec::with_capacity(syntax_line.items.len()));
 
             for (style, _, range) in &syntax_line.items {
                 let item_content = &line_content[range.clone()];
                 let item_style = syntact_style_to_tui(style);
 
-                line_span.0.push(Span::styled(item_content, item_style));
+                line_span.spans.push(Span::styled(item_content, item_style));
             }
 
             result_lines.push(line_span);
@@ -64,18 +65,18 @@ impl SyntaxText {
     }
 }
 
-impl<'a> From<&'a SyntaxText> for tui::text::Text<'a> {
+impl<'a> From<&'a SyntaxText> for ratatui::text::Text<'a> {
     fn from(v: &'a SyntaxText) -> Self {
-        let mut result_lines: Vec<Spans> = Vec::with_capacity(v.lines.len());
+        let mut result_lines: Vec<Line> = Vec::with_capacity(v.lines.len());
 
         for (syntax_line, line_content) in v.lines.iter().zip(v.text.lines()) {
-            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
+            let mut line_span = Line::from(Vec::with_capacity(syntax_line.items.len()));
 
             for (style, _, range) in &syntax_line.items {
                 let item_content = &line_content[range.clone()];
                 let item_style = syntact_style_to_tui(style);
 
-                line_span.0.push(Span::styled(item_content, item_style));
+                line_span.spans.push(Span::styled(item_content, item_style));
             }
 
             result_lines.push(line_span);
@@ -85,21 +86,21 @@ impl<'a> From<&'a SyntaxText> for tui::text::Text<'a> {
     }
 }
 
-fn syntact_style_to_tui(style: &Style) -> tui::style::Style {
-    let mut res = tui::style::Style::default().fg(tui::style::Color::Rgb(
+fn syntact_style_to_tui(style: &Style) -> ratatui::style::Style {
+    let mut res = ratatui::style::Style::default().fg(ratatui::style::Color::Rgb(
         style.foreground.r,
         style.foreground.g,
         style.foreground.b,
     ));
 
     if style.font_style.contains(FontStyle::BOLD) {
-        res = res.add_modifier(tui::style::Modifier::BOLD);
+        res = res.add_modifier(ratatui::style::Modifier::BOLD);
     }
     if style.font_style.contains(FontStyle::ITALIC) {
-        res = res.add_modifier(tui::style::Modifier::ITALIC);
+        res = res.add_modifier(ratatui::style::Modifier::ITALIC);
     }
     if style.font_style.contains(FontStyle::UNDERLINE) {
-        res = res.add_modifier(tui::style::Modifier::UNDERLINED);
+        res = res.add_modifier(ratatui::style::Modifier::UNDERLINED);
     }
 
     res

@@ -8,8 +8,7 @@ use crate::event::Key;
 use crate::tree::{Database, Table};
 use anyhow::Result;
 use async_trait::async_trait;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     widgets::{Block, Borders, List, ListItem},
@@ -138,7 +137,7 @@ impl PropertiesComponent {
 }
 
 impl StatefulDrawableComponent for PropertiesComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(vec![Constraint::Length(20), Constraint::Min(1)])
