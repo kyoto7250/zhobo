@@ -5,6 +5,7 @@ use crate::config::KeyConfig;
 use crate::event::Key;
 use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
+use ratatui::layout::Flex;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     Frame,
@@ -38,8 +39,10 @@ impl RecordTableComponent {
         headers: Vec<String>,
         database: Database,
         table: DTable,
+        hold_cursor_position: bool,
     ) {
-        self.table.update(rows, headers, database, table.clone());
+        self.table
+            .update(rows, headers, database, table.clone(), hold_cursor_position);
         self.filter.table = Some(table);
     }
 
@@ -58,6 +61,7 @@ impl StatefulDrawableComponent for RecordTableComponent {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints(vec![Constraint::Length(3), Constraint::Length(5)])
+            .flex(Flex::Legacy)
             .split(area);
 
         self.table

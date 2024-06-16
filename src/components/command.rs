@@ -62,6 +62,16 @@ pub fn scroll_to_top_bottom(key: &KeyConfig) -> CommandText {
     )
 }
 
+pub fn move_to_head_tail_of_line(key: &KeyConfig) -> CommandText {
+    CommandText::new(
+        format!(
+            "Move to head/tail of line [{},{}]",
+            key.move_to_head_of_line, key.move_to_tail_of_line,
+        ),
+        CMD_GROUP_TABLE,
+    )
+}
+
 pub fn expand_collapse(key: &KeyConfig) -> CommandText {
     CommandText::new(
         format!("Expand/Collapse [{},{}]", key.scroll_right, key.scroll_left,),
@@ -83,6 +93,13 @@ pub fn move_focus(key: &KeyConfig) -> CommandText {
     )
 }
 
+pub fn sort_by_column(key: &KeyConfig) -> CommandText {
+    CommandText::new(
+        format!("Sort by column [{}]", key.sort_by_column),
+        CMD_GROUP_TABLE,
+    )
+}
+
 pub fn extend_selection_by_one_cell(key: &KeyConfig) -> CommandText {
     CommandText::new(
         format!(
@@ -91,6 +108,16 @@ pub fn extend_selection_by_one_cell(key: &KeyConfig) -> CommandText {
             key.extend_selection_by_one_cell_down,
             key.extend_selection_by_one_cell_left,
             key.extend_selection_by_one_cell_right
+        ),
+        CMD_GROUP_TABLE,
+    )
+}
+
+pub fn extend_selection_by_line(key: &KeyConfig) -> CommandText {
+    CommandText::new(
+        format!(
+            "Extend selection by horizontal line [{}]",
+            key.extend_selection_by_horizontal_line,
         ),
         CMD_GROUP_TABLE,
     )

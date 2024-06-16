@@ -7,6 +7,7 @@ use crate::config::KeyConfig;
 use crate::event::Key;
 use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
+use ratatui::layout::Flex;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
@@ -16,11 +17,92 @@ use ratatui::{
 use std::convert::From;
 use unicode_width::UnicodeWidthStr;
 
+#[derive(Debug, PartialEq)]
+struct Order {
+    pub column_number: usize,
+    pub is_asc: bool,
+}
+
+impl Order {
+    pub fn new(column_number: usize, is_asc: bool) -> Self {
+        Self {
+            column_number,
+            is_asc,
+        }
+    }
+
+    fn query(&self) -> String {
+        let order = if self.is_asc { "ASC" } else { "DESC" };
+
+        return format!(
+            "{column} {order}",
+            column = self.column_number,
+            order = order
+        );
+    }
+}
+
+#[derive(PartialEq)]
+struct OrderManager {
+    orders: Vec<Order>,
+}
+
+impl OrderManager {
+    fn new() -> Self {
+        Self { orders: vec![] }
+    }
+
+    fn generate_order_query(&mut self) -> Option<String> {
+        let order_query = self
+            .orders
+            .iter()
+            .map(|order| order.query())
+            .collect::<Vec<String>>();
+
+        if !order_query.is_empty() {
+            return Some("ORDER BY ".to_string() + &order_query.join(", "));
+        }
+
+        None
+    }
+
+    fn generate_header_icons(&mut self, header_length: usize) -> Vec<String> {
+        let mut header_icons = vec![String::new(); header_length];
+
+        for (index, order) in self.orders.iter().enumerate() {
+            let arrow = if order.is_asc { "↑" } else { "↓" };
+            header_icons[order.column_number - 1] =
+                format!("{arrow}{number}", arrow = arrow, number = index + 1);
+        }
+
+        header_icons
+    }
+
+    fn add_order(&mut self, selected_column: usize) {
+        let selected_column_number = selected_column + 1;
+        if let Some(position) = self
+            .orders
+            .iter()
+            .position(|order| order.column_number == selected_column_number)
+        {
+            if self.orders[position].is_asc {
+                self.orders[position].is_asc = false;
+            } else {
+                self.orders.remove(position);
+            }
+        } else {
+            let order = Order::new(selected_column_number, true);
+            self.orders.push(order);
+        }
+    }
+}
+
 pub struct TableComponent {
     pub headers: Vec<String>,
     pub rows: Vec<Vec<String>>,
     pub eod: bool,
     pub selected_row: TableState,
+    orders: OrderManager,
     table: Option<(Database, DTable)>,
     selected_column: usize,
     selection_area_corner: Option<(usize, usize)>,
@@ -35,6 +117,7 @@ impl TableComponent {
             selected_row: TableState::default(),
             headers: vec![],
             rows: vec![],
+            orders: OrderManager::new(),
             table: None,
             selected_column: 0,
             selection_area_corner: None,
@@ -57,6 +140,7 @@ impl TableComponent {
         headers: Vec<String>,
         database: Database,
         table: DTable,
+        hold_cusor_position: bool,
     ) {
         self.selected_row.select(None);
         if !rows.is_empty() {
@@ -64,7 +148,11 @@ impl TableComponent {
         }
         self.headers = headers;
         self.rows = rows;
-        self.selected_column = 0;
+        self.selected_column = if hold_cusor_position {
+            self.selected_column
+        } else {
+            0
+        };
         self.selection_area_corner = None;
         self.column_page_start = std::cell::Cell::new(0);
         self.scroll = VerticalScroll::new(false, false);
@@ -76,6 +164,7 @@ impl TableComponent {
         self.selected_row.select(None);
         self.headers = Vec::new();
         self.rows = Vec::new();
+        self.orders = OrderManager::new();
         self.selected_column = 0;
         self.selection_area_corner = None;
         self.column_page_start = std::cell::Cell::new(0);
@@ -88,8 +177,29 @@ impl TableComponent {
         self.selection_area_corner = None;
     }
 
+    pub fn add_order(&mut self) {
+        self.orders.add_order(self.selected_column)
+    }
+
+    pub fn generate_order_query(&mut self) -> Option<String> {
+        self.orders.generate_order_query()
+    }
+
+    pub fn generate_header_icons(&mut self) -> Vec<String> {
+        self.orders.generate_header_icons(self.headers.len())
+    }
+
     pub fn end(&mut self) {
         self.eod = true;
+    }
+
+    fn move_to_head_of_line(&mut self) {
+        self.selected_column = 0;
+    }
+
+    fn move_to_tail_of_line(&mut self) {
+        let vertical_length = self.headers.len().saturating_sub(1);
+        self.selected_column = vertical_length;
     }
 
     fn next_row(&mut self, lines: usize) {
@@ -196,6 +306,21 @@ impl TableComponent {
                     y.saturating_sub(1)
                 },
             ));
+        }
+    }
+
+    fn expand_selected_by_horizontal_line(&mut self) {
+        let horizontal_length = self.headers.len().saturating_sub(1);
+        let vertical_length = self.selected_row.selected().unwrap_or(0);
+
+        if let Some((x, y)) = self.selection_area_corner {
+            if x == horizontal_length {
+                self.selection_area_corner = None;
+            } else {
+                self.selection_area_corner = Some((horizontal_length, y));
+            }
+        } else {
+            self.selection_area_corner = Some((horizontal_length, vertical_length));
         }
     }
 
@@ -405,6 +530,7 @@ impl StatefulDrawableComponent for TableComponent {
             .vertical_margin(1)
             .horizontal_margin(1)
             .direction(Direction::Vertical)
+            .flex(Flex::Legacy)
             .constraints(
                 [
                     Constraint::Length(2),
@@ -471,15 +597,15 @@ impl StatefulDrawableComponent for TableComponent {
             });
             Row::new(cells).height(height as u16).bottom_margin(1)
         });
-
-        let table = Table::new(rows, &constraints)
+        let table = Table::default()
+            .rows(rows)
             .header(header)
-            .block(block)
             .style(if focused {
                 Style::default()
             } else {
                 Style::default().fg(Color::DarkGray)
-            });
+            })
+            .widths(&constraints);
         let mut state = self.selected_row.clone();
         f.render_stateful_widget(
             table,
@@ -520,6 +646,13 @@ impl Component for TableComponent {
         out.push(CommandInfo::new(command::extend_selection_by_one_cell(
             &self.key_config,
         )));
+        out.push(CommandInfo::new(command::extend_selection_by_line(
+            &self.key_config,
+        )));
+        out.push(CommandInfo::new(command::move_to_head_tail_of_line(
+            &self.key_config,
+        )));
+        out.push(CommandInfo::new(command::sort_by_column(&self.key_config)));
     }
 
     fn event(&mut self, key: Key) -> Result<EventState> {
@@ -544,11 +677,18 @@ impl Component for TableComponent {
         } else if key == self.key_config.scroll_to_bottom {
             self.scroll_to_bottom();
             return Ok(EventState::Consumed);
+        } else if key == self.key_config.move_to_head_of_line {
+            self.move_to_head_of_line();
+        } else if key == self.key_config.move_to_tail_of_line {
+            self.move_to_tail_of_line();
         } else if key == self.key_config.scroll_right {
             self.next_column();
             return Ok(EventState::Consumed);
         } else if key == self.key_config.extend_selection_by_one_cell_left {
             self.expand_selected_area_x(false);
+            return Ok(EventState::Consumed);
+        } else if key == self.key_config.extend_selection_by_horizontal_line {
+            self.expand_selected_by_horizontal_line();
             return Ok(EventState::Consumed);
         } else if key == self.key_config.extend_selection_by_one_cell_up {
             self.expand_selected_area_y(false);
@@ -566,7 +706,7 @@ impl Component for TableComponent {
 
 #[cfg(test)]
 mod test {
-    use super::{KeyConfig, TableComponent};
+    use super::{KeyConfig, Order, OrderManager, TableComponent};
     use ratatui::layout::Constraint;
 
     #[test]
@@ -685,6 +825,32 @@ mod test {
     }
 
     #[test]
+    fn test_expand_selected_by_horizontal_line() {
+        let mut component = TableComponent::new(KeyConfig::default());
+        component.headers = vec!["a", "b", "c"].iter().map(|h| h.to_string()).collect();
+        component.rows = vec![
+            vec!["d", "e", "f"].iter().map(|h| h.to_string()).collect(),
+            vec!["g", "h", "i"].iter().map(|h| h.to_string()).collect(),
+        ];
+
+        // select one line
+        component.selected_row.select(Some(0));
+        component.expand_selected_by_horizontal_line();
+        assert_eq!(component.selection_area_corner, Some((2, 0)));
+        assert_eq!(component.selected_cells(), Some("d,e,f".to_string()));
+
+        // undo select horizontal line
+        component.expand_selected_by_horizontal_line();
+        assert_eq!(component.selection_area_corner, None);
+
+        // select two line
+        component.expand_selected_area_y(true);
+        component.expand_selected_by_horizontal_line();
+        assert_eq!(component.selection_area_corner, Some((2, 1)));
+        assert_eq!(component.selected_cells(), Some("d,e,f\ng,h,i".to_string()));
+    }
+
+    #[test]
     fn test_is_number_column() {
         let mut component = TableComponent::new(KeyConfig::default());
         component.headers = vec!["1", "2", "3"].iter().map(|h| h.to_string()).collect();
@@ -775,6 +941,42 @@ mod test {
         assert!(component.is_selected_cell(1, 2, 1));
         // f
         assert!(!component.is_selected_cell(1, 3, 1));
+    }
+
+    #[test]
+    fn test_move_to_head_of_line() {
+        let mut component = TableComponent::new(KeyConfig::default());
+
+        component.headers = vec!["a", "b", "c"].iter().map(|h| h.to_string()).collect();
+        component.rows = vec![
+            vec!["d", "e", "f"].iter().map(|h| h.to_string()).collect(),
+            vec!["g", "h", "i"].iter().map(|h| h.to_string()).collect(),
+        ];
+
+        // cursor returns to the top.
+        component.expand_selected_area_y(true);
+        component.expand_selected_area_y(true);
+        component.move_to_head_of_line();
+        assert_eq!(component.selected_column, 0);
+    }
+
+    #[test]
+    fn test_move_to_tail_of_line() {
+        let mut component = TableComponent::new(KeyConfig::default());
+
+        // if component does not have a header, cursor is not moved.
+        component.move_to_head_of_line();
+        assert_eq!(component.selected_column, 0);
+
+        // if component has a header, cursor is moved to tail of line.
+        component.headers = vec!["a", "b", "c"].iter().map(|h| h.to_string()).collect();
+        component.rows = vec![
+            vec!["d", "e", "f"].iter().map(|h| h.to_string()).collect(),
+            vec!["g", "h", "i"].iter().map(|h| h.to_string()).collect(),
+        ];
+
+        component.move_to_tail_of_line();
+        assert_eq!(component.selected_column, 2);
     }
 
     #[test]
@@ -872,5 +1074,77 @@ mod test {
                 Constraint::Length(5),
             ]
         );
+    }
+
+    #[test]
+    fn test_query() {
+        let asc_order = Order::new(1, true);
+        let desc_order = Order::new(2, false);
+
+        assert_eq!(asc_order.query(), "1 ASC".to_string());
+        assert_eq!(desc_order.query(), "2 DESC".to_string());
+    }
+
+    #[test]
+    fn test_generate_order_query() {
+        let mut order_manager = OrderManager::new();
+
+        // If orders is empty, it should return None.
+        assert_eq!(order_manager.generate_order_query(), None);
+
+        order_manager.add_order(1);
+        order_manager.add_order(1);
+        order_manager.add_order(2);
+        assert_eq!(
+            order_manager.generate_order_query(),
+            Some("ORDER BY 2 DESC, 3 ASC".to_string())
+        )
+    }
+
+    #[test]
+    fn test_generate_header_icons() {
+        let mut order_manager = OrderManager::new();
+        assert_eq!(order_manager.generate_header_icons(1), vec![String::new()]);
+
+        order_manager.add_order(1);
+        order_manager.add_order(1);
+        order_manager.add_order(2);
+        assert_eq!(
+            order_manager.generate_header_icons(3),
+            vec![String::new(), "↓1".to_string(), "↑2".to_string()]
+        );
+        assert_eq!(
+            order_manager.generate_header_icons(4),
+            vec![
+                String::new(),
+                "↓1".to_string(),
+                "↑2".to_string(),
+                String::new()
+            ]
+        );
+    }
+
+    #[test]
+    fn test_add_order() {
+        let mut order_manager = OrderManager::new();
+
+        // press first time, condition is asc.
+        order_manager.add_order(1);
+        assert_eq!(order_manager.orders, vec![Order::new(2, true)]);
+
+        // press twice times, condition is desc.
+        order_manager.add_order(1);
+        assert_eq!(order_manager.orders, vec![Order::new(2, false)]);
+
+        // press another column, this column is second order.
+        order_manager.add_order(2);
+        assert_eq!(
+            order_manager.orders,
+            vec![Order::new(2, false), Order::new(3, true)]
+        );
+
+        // press three times, removed.
+        order_manager.add_order(1);
+        assert_eq!(order_manager.orders, vec![Order::new(3, true)]);
     }
 }

@@ -1,6 +1,6 @@
-# dolce
+# zhobo
 
-`dolce` is the rebaked [gobang project](https://github.com/TaKO8Ki/gobang).
+`zhobo` is the rebaked [gobang project](https://github.com/TaKO8Ki/gobang).
 
 ## Features
 - Cross-platform support (macOS, Windows, Linux)

@@ -76,6 +76,7 @@ impl PropertiesComponent {
                 columns.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
+                false,
             );
         }
         self.constraint_table.reset();
@@ -89,6 +90,7 @@ impl PropertiesComponent {
                 constraints.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
+                false,
             );
         }
         self.foreign_key_table.reset();
@@ -102,6 +104,7 @@ impl PropertiesComponent {
                 foreign_keys.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
+                false,
             );
         }
         self.index_table.reset();
@@ -115,6 +118,7 @@ impl PropertiesComponent {
                 indexes.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
+                false,
             );
         }
         Ok(())
