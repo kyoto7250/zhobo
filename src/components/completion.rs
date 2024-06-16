@@ -48,7 +48,7 @@ impl CompletionComponent {
     fn next(&mut self) {
         let i = match self.state.selected() {
             Some(i) => {
-                if i >= self.filterd_candidates().count() - 1 {
+                if i + 1 >= self.filterd_candidates().count() {
                     0
                 } else {
                     i + 1
@@ -63,7 +63,10 @@ impl CompletionComponent {
         let i = match self.state.selected() {
             Some(i) => {
                 if i == 0 {
-                    self.filterd_candidates().count() - 1
+                    self.filterd_candidates()
+                        .count()
+                        .checked_sub(1)
+                        .unwrap_or(0)
                 } else {
                     i - 1
                 }

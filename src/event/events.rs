@@ -3,6 +3,7 @@ use crossterm::event;
 use std::{sync::mpsc, thread, time::Duration};
 
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 pub struct EventConfig {
     pub exit_key: Key,
     pub tick_rate: Duration,

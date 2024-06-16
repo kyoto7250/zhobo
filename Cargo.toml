@@ -34,6 +34,7 @@ clap = "4.5.7"
 structopt = "0.3.26"
 syntect = { version = "5.0", default-features = false, features = ["metadata", "default-fancy"]}
 unicode-segmentation = "1.11.0"
+ron = "0.8.1"
 
 [target.'cfg(all(target_family="unix",not(target_os="macos")))'.dependencies]
 which = "6.0.1"

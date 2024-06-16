@@ -1732,6 +1732,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ron"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b91f7eff05f748767f183df4320a63d6936e9c6107d97c9e6bdd9784f4289c94"
+dependencies = [
+ "base64",
+ "bitflags 2.5.0",
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
 name = "rsa"
 version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3193,6 +3205,7 @@ dependencies = [
  "itertools 0.13.0",
  "pretty_assertions",
  "ratatui",
+ "ron",
  "rust_decimal",
  "serde",
  "serde_json",
