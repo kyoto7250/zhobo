@@ -8,16 +8,18 @@
 - Intuitive keyboard only control
 
 ## Additional Features
-- [ ] custom keymap.
-- [ ] support unix domain.
-- [ ] sort based on specific columns.
-- [ ] fix some bugs.
+- [x] custom keymap.
+- [x] support unix domain.
+- [x] sort based on specific columns.
 
 ## installation
 
 ## homebrew
 
 ## cargo
+```bash
+cargo install zhobo
+```
 
 ## default keymap
 

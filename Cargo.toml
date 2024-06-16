@@ -9,6 +9,8 @@ repository = "https://github.com/kyoto7250/zhobo"
 readme = "README.md"
 description = "A cross-platform TUI database viewer written in Rust. Personally maintained gobang project"
 exclude = ["resources/"]
+keywords = ["database", "cli", "Rust"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 ratatui = { version = "0.26.3" }
