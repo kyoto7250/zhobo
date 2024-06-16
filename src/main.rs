@@ -40,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
     loop {
         terminal.draw(|f| {
             if let Err(err) = app.draw(f) {
-                outln!(config#Error, "error: {}", err.to_string());
+                outln!(config #Error, "error: {}", err.to_string());
                 std::process::exit(1);
             }
         })?;
