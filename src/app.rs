@@ -1,17 +1,17 @@
 use crate::clipboard::copy_to_clipboard;
 use crate::components::{
-    CommandInfo, Component as _, DrawableComponent as _, EventState, StatefulDrawableComponent,
-};
-use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool, RECORDS_LIMIT_PER_PAGE};
-use crate::event::Key;
-use crate::{
-    components::tab::Tab,
-    components::{
+    tab::Tab,
+    {
         command, ConnectionsComponent, DatabasesComponent, ErrorComponent, HelpComponent,
         PropertiesComponent, RecordTableComponent, SqlEditorComponent, TabComponent,
     },
-    config::Config,
 };
+use crate::components::{
+    CommandInfo, Component as _, DrawableComponent as _, EventState, StatefulDrawableComponent,
+};
+use crate::config::Config;
+use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool, RECORDS_LIMIT_PER_PAGE};
+use crate::event::Key;
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},

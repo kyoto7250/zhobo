@@ -255,7 +255,7 @@ impl Component for SqlEditorComponent {
             key if matches!(self.focus, Focus::Table) => return self.table.event(key),
             _ => (),
         }
-        return Ok(EventState::NotConsumed);
+        Ok(EventState::NotConsumed)
     }
 
     async fn async_event(&mut self, key: Key, pool: &Box<dyn Pool>) -> Result<EventState> {

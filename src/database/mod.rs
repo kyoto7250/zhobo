@@ -6,8 +6,8 @@ pub use mysql::MySqlPool;
 pub use postgres::PostgresPool;
 pub use sqlite::SqlitePool;
 
+use crate::tree::{Child, Database, Table};
 use async_trait::async_trait;
-use database_tree::{Child, Database, Table};
 
 pub const RECORDS_LIMIT_PER_PAGE: u8 = 200;
 

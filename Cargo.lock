@@ -341,15 +341,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "database-tree"
-version = "0.1.0-alpha.5"
-dependencies = [
- "anyhow",
- "chrono",
- "thiserror",
-]
-
-[[package]]
 name = "diff"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -591,37 +582,6 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi",
-]
-
-[[package]]
-name = "gobang"
-version = "0.1.0-alpha.5"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "clap",
- "crossterm 0.20.0",
- "database-tree",
- "dirs-next",
- "easy-cast",
- "futures",
- "itertools",
- "pretty_assertions",
- "rust_decimal",
- "serde",
- "serde_json",
- "sqlx",
- "structopt",
- "strum",
- "strum_macros",
- "syntect",
- "tokio",
- "toml",
- "tui",
- "unicode-segmentation",
- "unicode-width",
- "which",
 ]
 
 [[package]]
@@ -2089,4 +2049,35 @@ dependencies = [
  "quote",
  "syn",
  "synstructure",
+]
+
+[[package]]
+name = "zhobo"
+version = "0.1.0-alpha.5"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "clap",
+ "crossterm 0.20.0",
+ "dirs-next",
+ "easy-cast",
+ "futures",
+ "itertools",
+ "pretty_assertions",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "structopt",
+ "strum",
+ "strum_macros",
+ "syntect",
+ "thiserror",
+ "tokio",
+ "toml",
+ "tui",
+ "unicode-segmentation",
+ "unicode-width",
+ "which",
 ]

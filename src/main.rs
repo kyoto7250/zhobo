@@ -5,6 +5,7 @@ mod components;
 mod config;
 mod database;
 mod event;
+mod tree;
 mod ui;
 mod version;
 
@@ -12,6 +13,7 @@ mod version;
 mod log;
 
 use crate::app::App;
+use crate::config::Config;
 use crate::event::{Event, Key};
 use anyhow::Result;
 use crossterm::{
@@ -24,7 +26,7 @@ use tui::{backend::CrosstermBackend, Terminal};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let value = crate::cli::parse();
-    let config = config::Config::new(&value.config)?;
+    let config = Config::new(&value.config)?;
 
     setup_terminal()?;
 

@@ -98,7 +98,7 @@ impl<'a, 'b> LineComposer<'a> for WordWrapper<'a, 'b> {
                 {
                     let remainder = &self.current_line[truncate_at..];
                     if !remainder.is_empty() {
-                        self.next_line.extend_from_slice(&remainder);
+                        self.next_line.extend_from_slice(remainder);
                     }
                 }
                 self.current_line.truncate(truncate_at);

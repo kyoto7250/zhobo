@@ -3,8 +3,8 @@ use crate::components::command::CommandInfo;
 use crate::components::{TableComponent, TableFilterComponent};
 use crate::config::KeyConfig;
 use crate::event::Key;
+use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
-use database_tree::{Database, Table as DTable};
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},

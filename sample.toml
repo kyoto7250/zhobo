@@ -20,7 +20,7 @@ port = 3306
 
 [[conn]]
 type = "mysql"
-user = "tako8ki"
+user = "kyoto7250"
 host = "localhost"
 port = 3306
 database = "world"

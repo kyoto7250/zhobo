@@ -5,10 +5,8 @@ mod item;
 mod tree_iter;
 mod treeitems_iter;
 
-pub use crate::{
-    databasetree::DatabaseTree,
-    databasetree::MoveSelection,
-    item::{DatabaseTreeItem, TreeItemInfo},
+pub use crate::tree::{
+    databasetree::DatabaseTree, databasetree::MoveSelection, item::DatabaseTreeItem,
 };
 
 #[derive(Clone, PartialEq, Debug)]

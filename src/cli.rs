@@ -3,7 +3,7 @@ use structopt::StructOpt;
 
 /// A cross-platform TUI database management tool written in Rust
 #[derive(StructOpt, Debug)]
-#[structopt(name = "gobang")]
+#[structopt(name = "zhobo")]
 pub struct Cli {
     #[structopt(flatten)]
     pub config: CliConfig,

@@ -18,7 +18,7 @@ pub mod utils;
 #[cfg(debug_assertions)]
 pub mod debug;
 
-pub use command::{CommandInfo, CommandText};
+pub use command::CommandInfo;
 pub use completion::CompletionComponent;
 pub use connections::ConnectionsComponent;
 pub use database_filter::DatabaseFilterComponent;
@@ -33,9 +33,6 @@ pub use table::TableComponent;
 pub use table_filter::TableFilterComponent;
 pub use table_status::TableStatusComponent;
 pub use table_value::TableValueComponent;
-
-#[cfg(debug_assertions)]
-pub use debug::DebugComponent;
 
 use crate::database::Pool;
 use anyhow::Result;
@@ -100,29 +97,10 @@ pub trait Component {
         Ok(EventState::NotConsumed)
     }
 
-    fn focused(&self) -> bool {
-        false
-    }
-
-    fn focus(&mut self, _focus: bool) {}
-
-    fn is_visible(&self) -> bool {
-        true
-    }
-
     fn hide(&mut self) {}
 
     fn show(&mut self) -> Result<()> {
         Ok(())
-    }
-
-    fn toggle_visible(&mut self) -> Result<()> {
-        if self.is_visible() {
-            self.hide();
-            Ok(())
-        } else {
-            self.show()
-        }
     }
 }
 

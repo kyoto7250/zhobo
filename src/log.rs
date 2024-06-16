@@ -73,7 +73,7 @@ macro_rules! debug {
                 .write(true)
                 .create(true)
                 .append(true)
-                .open("gobang.log")
+                .open("zhobo.log")
                 .unwrap();
             writeln!(file, $($expr),+).expect("Can't write output");
         }

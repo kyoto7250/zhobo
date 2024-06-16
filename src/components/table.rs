@@ -5,8 +5,8 @@ use super::{
 use crate::components::command::{self, CommandInfo};
 use crate::config::KeyConfig;
 use crate::event::Key;
+use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
-use database_tree::{Database, Table as DTable};
 use std::convert::From;
 use tui::{
     backend::Backend,
