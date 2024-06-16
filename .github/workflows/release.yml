@@ -9,6 +9,7 @@ jobs:
   release:
     name: Release
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     outputs:
       zhobo_version: ${{ env.ZHOBO_VERSION }}
     env:
@@ -128,10 +129,10 @@ jobs:
   cargo-publish:
     name: Cargo publish
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: release
     steps:
       - uses: actions/checkout@v1
-
       - name: Install cargo-workspaces
         uses: dtolnay/rust-toolchain@stable
         with:
