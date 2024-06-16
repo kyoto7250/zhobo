@@ -7,14 +7,13 @@ use crate::config::KeyConfig;
 use crate::event::Key;
 use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
-use std::convert::From;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, Cell, Row, Table, TableState},
     Frame,
 };
+use std::convert::From;
 use unicode_width::UnicodeWidthStr;
 
 pub struct TableComponent {
@@ -401,7 +400,7 @@ impl TableComponent {
 }
 
 impl StatefulDrawableComponent for TableComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let chunks = Layout::default()
             .vertical_margin(1)
             .horizontal_margin(1)
@@ -473,15 +472,14 @@ impl StatefulDrawableComponent for TableComponent {
             Row::new(cells).height(height as u16).bottom_margin(1)
         });
 
-        let table = Table::new(rows)
+        let table = Table::new(rows, &constraints)
             .header(header)
             .block(block)
             .style(if focused {
                 Style::default()
             } else {
                 Style::default().fg(Color::DarkGray)
-            })
-            .widths(&constraints);
+            });
         let mut state = self.selected_row.clone();
         f.render_stateful_widget(
             table,
@@ -569,7 +567,7 @@ impl Component for TableComponent {
 #[cfg(test)]
 mod test {
     use super::{KeyConfig, TableComponent};
-    use tui::layout::Constraint;
+    use ratatui::layout::Constraint;
 
     #[test]
     fn test_headers() {

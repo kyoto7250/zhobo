@@ -7,36 +7,36 @@ license = "MIT"
 homepage = "https://github.com/kyoto7250/zhobo"
 repository = "https://github.com/kyoto7250/zhobo"
 readme = "README.md"
-description = "A cross-platform TUI database management tool written in Rust"
+description = "A cross-platform TUI database viewer written in Rust. Personaly maintained gobang project"
 exclude = ["resources/"]
 
 [dependencies]
-tui = { version = "0.15.0", features = ["crossterm"], default-features = false }
-crossterm = "0.20"
-anyhow = "1.0.38"
-unicode-width = "0.1"
-sqlx = { version = "0.5.6", features = ["mysql", "postgres", "sqlite", "chrono", "runtime-tokio-rustls", "decimal", "json"], default-features = false }
-chrono = "0.4"
-tokio = { version = "1.11.0", features = ["full"] }
-futures = "0.3.5"
-serde_json = "1.0"
-thiserror = "1.0"
-serde = "1.0"
-toml = "0.4"
-strum = "0.21"
-strum_macros = "0.21"
-easy-cast = "0.4"
-async-trait = "0.1.50"
-itertools = "0.10.0"
-rust_decimal = "1.15"
-dirs-next = "2.0"
-clap = "2.33.3"
-structopt = "0.3.22"
-syntect = { version = "4.5", default-features = false, features = ["metadata", "default-fancy"]}
-unicode-segmentation = "1.7"
+ratatui = { version = "0.26.3" }
+crossterm = "0.27.0"
+anyhow = "1.0.86"
+unicode-width = "0.1.13"
+sqlx = { version = "0.7.4", features = ["mysql", "postgres", "sqlite", "chrono", "rust_decimal", "runtime-tokio-rustls", "json"], default-features = false }
+chrono = "0.4.38"
+tokio = { version = "1.37.0", features = ["full"] }
+futures = "0.3.30"
+serde_json = "1.0.117"
+thiserror = "1.0.61"
+serde = "1.0.203"
+toml = "0.8.14"
+strum = "0.26.2"
+strum_macros = "0.26.4"
+easy-cast = "0.5.2"
+async-trait = "0.1.80"
+itertools = "0.13.0"
+rust_decimal = "1.35"
+dirs-next = "2.0.0"
+clap = "4.5.7"
+structopt = "0.3.26"
+syntect = { version = "5.0", default-features = false, features = ["metadata", "default-fancy"]}
+unicode-segmentation = "1.11.0"
 
 [target.'cfg(all(target_family="unix",not(target_os="macos")))'.dependencies]
-which = "4.1"
+which = "6.0.1"
 
 [dev-dependencies]
-pretty_assertions = "1.0.0"
+pretty_assertions = "1.4.0"

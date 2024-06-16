@@ -3,11 +3,10 @@ use crate::components::command::CommandInfo;
 use crate::config::{Connection, KeyConfig};
 use crate::event::Key;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Block, Borders, Clear, List, ListItem, ListState},
     Frame,
 };
@@ -82,14 +81,14 @@ impl ConnectionsComponent {
 }
 
 impl StatefulDrawableComponent for ConnectionsComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, _area: Rect, _focused: bool) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, _area: Rect, _focused: bool) -> Result<()> {
         let width = 80;
         let height = 20;
         let conns = &self.connections;
         let mut connections: Vec<ListItem> = Vec::new();
         for c in conns {
             connections.push(
-                ListItem::new(vec![Spans::from(Span::raw(c.database_url_with_name()?))])
+                ListItem::new(vec![Line::from(Span::raw(c.database_url_with_name()?))])
                     .style(Style::default()),
             )
         }

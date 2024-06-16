@@ -7,11 +7,10 @@ use crate::config::KeyConfig;
 use crate::event::Key;
 use crate::tree::Table;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
@@ -130,8 +129,8 @@ impl TableFilterComponent {
 }
 
 impl StatefulDrawableComponent for TableFilterComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
-        let query = Paragraph::new(Spans::from(vec![
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
+        let query = Paragraph::new(Line::from(vec![
             Span::styled(
                 self.table
                     .as_ref()

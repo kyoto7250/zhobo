@@ -37,8 +37,8 @@ pub use table_value::TableValueComponent;
 use crate::database::Pool;
 use anyhow::Result;
 use async_trait::async_trait;
+use ratatui::{layout::Rect, Frame};
 use std::convert::TryInto;
-use tui::{backend::Backend, layout::Rect, Frame};
 use unicode_width::UnicodeWidthChar;
 
 #[derive(PartialEq, Debug)]
@@ -64,22 +64,15 @@ impl From<bool> for EventState {
 }
 
 pub trait DrawableComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, rect: Rect, focused: bool) -> Result<()>;
+    fn draw(&self, f: &mut Frame, rect: Rect, focused: bool) -> Result<()>;
 }
 
 pub trait StatefulDrawableComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, rect: Rect, focused: bool) -> Result<()>;
+    fn draw(&mut self, f: &mut Frame, rect: Rect, focused: bool) -> Result<()>;
 }
 
 pub trait MovableComponent {
-    fn draw<B: Backend>(
-        &mut self,
-        f: &mut Frame<B>,
-        rect: Rect,
-        focused: bool,
-        x: u16,
-        y: u16,
-    ) -> Result<()>;
+    fn draw(&mut self, f: &mut Frame, rect: Rect, focused: bool, x: u16, y: u16) -> Result<()>;
 }
 
 /// base component trait

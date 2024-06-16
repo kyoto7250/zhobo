@@ -1,14 +1,14 @@
 #![allow(dead_code)]
 
 use easy_cast::Cast;
-use std::iter;
-use tui::{
+use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Rect},
     style::Style,
     text::{StyledGrapheme, Text},
     widgets::{Block, StatefulWidget, Widget, Wrap},
 };
+use std::iter;
 use unicode_width::UnicodeWidthStr;
 
 use super::reflow::{LineComposer, LineTruncator, WordWrapper};
@@ -130,9 +130,8 @@ impl<'a> StatefulWidget for StatefulParagraph<'a> {
         }
 
         let style = self.style;
-        let mut styled = self.text.lines.iter().flat_map(|spans| {
-            spans
-                .0
+        let mut styled = self.text.lines.iter().flat_map(|line| {
+            line.spans
                 .iter()
                 .flat_map(|span| span.styled_graphemes(style))
                 // Required given the way composers work but might be refactored out if we change

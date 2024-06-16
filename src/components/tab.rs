@@ -3,15 +3,14 @@ use crate::components::command::{self, CommandInfo};
 use crate::config::KeyConfig;
 use crate::event::Key;
 use anyhow::Result;
-use strum_macros::EnumIter;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Modifier, Style},
-    text::Spans,
+    text::Line,
     widgets::{Block, Borders, Tabs},
     Frame,
 };
+use strum_macros::EnumIter;
 
 #[derive(Debug, Clone, Copy, EnumIter)]
 pub enum Tab {
@@ -53,8 +52,8 @@ impl TabComponent {
 }
 
 impl DrawableComponent for TabComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, area: Rect, _focused: bool) -> Result<()> {
-        let titles = self.names().iter().cloned().map(Spans::from).collect();
+    fn draw(&self, f: &mut Frame, area: Rect, _focused: bool) -> Result<()> {
+        let titles: Vec<_> = self.names().iter().cloned().map(Line::from).collect();
         let tabs = Tabs::new(titles)
             .block(Block::default().borders(Borders::ALL))
             .select(self.selected_tab as usize)

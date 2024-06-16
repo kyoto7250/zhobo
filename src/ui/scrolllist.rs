@@ -1,17 +1,16 @@
-use std::iter::Iterator;
-use tui::{
-    backend::Backend,
+use ratatui::{
     buffer::Buffer,
     layout::Rect,
     style::Style,
-    text::Spans,
+    text::Line,
     widgets::{Block, List, ListItem, Widget},
     Frame,
 };
+use std::iter::Iterator;
 
 struct ScrollableList<'b, L>
 where
-    L: Iterator<Item = Spans<'b>>,
+    L: Iterator<Item = Line<'b>>,
 {
     block: Option<Block<'b>>,
     items: L,
@@ -20,7 +19,7 @@ where
 
 impl<'b, L> ScrollableList<'b, L>
 where
-    L: Iterator<Item = Spans<'b>>,
+    L: Iterator<Item = Line<'b>>,
 {
     fn new(items: L) -> Self {
         Self {
@@ -38,7 +37,7 @@ where
 
 impl<'b, L> Widget for ScrollableList<'b, L>
 where
-    L: Iterator<Item = Spans<'b>>,
+    L: Iterator<Item = Line<'b>>,
 {
     fn render(self, area: Rect, buf: &mut Buffer) {
         List::new(self.items.map(ListItem::new).collect::<Vec<ListItem>>())
@@ -48,9 +47,9 @@ where
     }
 }
 
-pub fn draw_list_block<'b, B: Backend, L>(f: &mut Frame<B>, r: Rect, block: Block<'b>, items: L)
+pub fn draw_list_block<'b, L>(f: &mut Frame, r: Rect, block: Block<'b>, items: L)
 where
-    L: Iterator<Item = Spans<'b>>,
+    L: Iterator<Item = Line<'b>>,
 {
     let list = ScrollableList::new(items).block(block);
     f.render_widget(list, r);

@@ -2,8 +2,7 @@ use super::{Component, DrawableComponent, EventState};
 use crate::components::command::CommandInfo;
 use crate::event::Key;
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::Rect,
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph},
@@ -21,7 +20,7 @@ impl TableValueComponent {
 }
 
 impl DrawableComponent for TableValueComponent {
-    fn draw<B: Backend>(&self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let paragraph = Paragraph::new(self.value.clone())
             .block(Block::default().borders(Borders::BOTTOM))
             .style(if focused {

@@ -5,8 +5,7 @@ use crate::config::KeyConfig;
 use crate::event::Key;
 use crate::tree::{Database, Table as DTable};
 use anyhow::Result;
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     Frame,
 };
@@ -55,7 +54,7 @@ impl RecordTableComponent {
 }
 
 impl StatefulDrawableComponent for RecordTableComponent {
-    fn draw<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, focused: bool) -> Result<()> {
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints(vec![Constraint::Length(3), Constraint::Length(5)])

@@ -18,7 +18,7 @@ impl PostgresPool {
     pub async fn new(database_url: &str) -> anyhow::Result<Self> {
         Ok(Self {
             pool: PgPoolOptions::new()
-                .connect_timeout(Duration::from_secs(5))
+                .acquire_timeout(Duration::from_secs(5))
                 .connect(database_url)
                 .await?,
         })
@@ -224,7 +224,7 @@ impl Pool for PostgresPool {
         for (key, group) in &tables
             .iter()
             .sorted_by(|a, b| Ord::cmp(&b.schema, &a.schema))
-            .group_by(|t| t.schema.as_ref())
+            .chunk_by(|t| t.schema.as_ref())
         {
             if let Some(key) = key {
                 schemas.push(
