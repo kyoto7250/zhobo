@@ -144,6 +144,7 @@ jobs:
         run: |
           git config --global user.email "runner@gha.local"
           git config --global user.name "Github Action"
+          cargo install cargo-workspaces
           cargo workspaces publish \
             --yes --force '*' --exact \
             --no-git-commit --allow-dirty --skip-published --token ${{ secrets.CRATES_IO_TOKEN }} \
