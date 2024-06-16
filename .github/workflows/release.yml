@@ -64,11 +64,9 @@ jobs:
         fetch-depth: 1
 
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ matrix.rust }}
-        profile: minimal
-        override: true
         target: ${{ matrix.target }}
 
     - name: Use Cross
@@ -121,7 +119,7 @@ jobs:
         fi
 
     - name: Publish
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: ${{ env.ASSET }}
       env:
@@ -135,7 +133,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Install cargo-workspaces
-        uses: actions-rs/install@v0.1
+        uses: dtolnay/rust-toolchain@stable
         with:
           crate: cargo-workspaces
 
