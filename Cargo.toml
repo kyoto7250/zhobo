@@ -1,8 +1,8 @@
 [package]
 name = "zhobo"
-version = "0.1.0-alpha.5"
+version = "0.1.0"
 authors = ["Kyoto7250 <kyoto7250@aol.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 homepage = "https://github.com/kyoto7250/zhobo"
 repository = "https://github.com/kyoto7250/zhobo"
