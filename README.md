@@ -1,14 +1,14 @@
 <div align="center">
 
-![gobang](./resources/logo.png)
+![zhobo](./resources/logo.png)
 
-gobang is currently in alpha
+zhobo is currently in alpha
 
 A cross-platform TUI database management tool written in Rust
 
-[![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/gobang/CI/main)](https://github.com/TaKO8Ki/gobang/actions) [![crates](https://img.shields.io/crates/v/gobang.svg?logo=rust)](https://crates.io/crates/gobang)
+[![github workflow status](https://img.shields.io/github/workflow/status/kyoto7250/zhobo/CI/main)](https://github.com/kyoto7250/zhobo/actions) [![crates](https://img.shields.io/crates/v/zhobo.svg?logo=rust)](https://crates.io/crates/zhobo)
 
-![gobang](./resources/gobang.gif)
+![zhobo](./resources/zhobo.gif)
 
 </div>
 
@@ -25,49 +25,49 @@ A cross-platform TUI database management tool written in Rust
 - [ ] Custom theme settings
 - [ ] Support the other databases
 
-## What does "gobang" come from?
+## What does "zhobo" come from?
 
-gobang means a Japanese game played on goban, a go board. The appearance of goban looks like table structure. And I live in Kyoto, Japan. In Kyoto city, streets are laid out on a grid (We call it “goban no me no youna (碁盤の目のような)”). They are why I named this project "gobang".
+zhobo means a Japanese game played on goban, a go board. The appearance of goban looks like table structure. And I live in Kyoto, Japan. In Kyoto city, streets are laid out on a grid (We call it “goban no me no youna (碁盤の目のような)”). They are why I named this project "zhobo".
 
 ## Installation
 
 ### With Homebrew (Linux, macOS)
 
-If you’re using Homebrew or Linuxbrew, install the gobang formula:
+If you’re using Homebrew or Linuxbrew, install the zhobo formula:
 
 ```
-brew install tako8ki/tap/gobang
+brew install kyoto7250/tap/zhobo
 ```
 
 ### On Windows
 
-If you're a Windows Scoop user, then you can install gobang from the [official bucket](https://github.com/ScoopInstaller/Main/blob/master/bucket/gobang.json):
+If you're a Windows Scoop user, then you can install zhobo from the [official bucket](https://github.com/ScoopInstaller/Main/blob/master/bucket/zhobo.json):
 
 ```
-scoop install gobang
+scoop install zhobo
 ```
 ### On NixOS
 
-If you're a Nix user, you can install [gobang](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/database/gobang/default.nix) from nixpkgs:
+If you're a Nix user, you can install [zhobo](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/database/zhobo/default.nix) from nixpkgs:
 
 ```
-$ nix-env --install gobang
+$ nix-env --install zhobo
 ```
 
 ### On Archlinux
 
-If you're an Archlinux user, you can install [gobang](https://aur.archlinux.org/packages/gobang-bin) from AUR:
+If you're an Archlinux user, you can install [zhobo](https://aur.archlinux.org/packages/zhobo-bin) from AUR:
 
 ```
-paru -S gobang-bin
+paru -S zhobo-bin
 ```
 
 ### On NetBSD
 
-If you're a NetBSD user, then you can install gobang from [pkgsrc](https://pkgsrc.se/databases/gobang):
+If you're a NetBSD user, then you can install zhobo from [pkgsrc](https://pkgsrc.se/databases/zhobo):
 
 ```
-pkgin install gobang
+pkgin install zhobo
 ```
 
 ### With Cargo (Linux, macOS, Windows)
@@ -75,24 +75,24 @@ pkgin install gobang
 If you already have a Rust environment set up, you can use the `cargo install` command:
 
 ```
-cargo install --version 0.1.0-alpha.5 gobang
+cargo install --version 0.1.0-alpha.5 zhobo
 ```
 
 ### From binaries (Linux, macOS, Windows)
 
-- Download the [latest release binary](https://github.com/TaKO8Ki/gobang/releases) for your system
+- Download the [latest release binary](https://github.com/kyoto7250/zhobo/releases) for your system
 - Set the `PATH` environment variable
 
 ## Usage
 
 ```
-$ gobang
+$ zhobo
 ```
 
 ```
-$ gobang -h
+$ zhobo -h
 USAGE:
-    gobang [OPTIONS]
+    zhobo [OPTIONS]
 
 FLAGS:
     -h, --help       Prints help information
@@ -124,9 +124,9 @@ If you want to add connections, you need to edit your config file. For more info
 
 The location of the file depends on your OS:
 
-- macOS: `$HOME/.config/gobang/config.toml`
-- Linux: `$HOME/.config/gobang/config.toml`
-- Windows: `%APPDATA%/gobang/config.toml`
+- macOS: `$HOME/.config/zhobo/config.toml`
+- Linux: `$HOME/.config/zhobo/config.toml`
+- Windows: `%APPDATA%/zhobo/config.toml`
 
 The following is a sample config.toml file:
 

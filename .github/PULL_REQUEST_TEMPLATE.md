@@ -1,4 +1,4 @@
-Thank you for making gobang better!
+Thank you for making zhobo better!
 
 Here's a checklist for things that will be checked during review or continuous integration.
 
