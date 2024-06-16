@@ -35,7 +35,7 @@ pub enum Focus {
 pub struct DatabasesComponent {
     tree: DatabaseTree,
     filter: DatabaseFilterComponent,
-    filterd_tree: Option<DatabaseTree>,
+    filtered_tree: Option<DatabaseTree>,
     scroll: VerticalScroll,
     focus: Focus,
     key_config: KeyConfig,
@@ -46,7 +46,7 @@ impl DatabasesComponent {
         Self {
             tree: DatabaseTree::default(),
             filter: DatabaseFilterComponent::new(),
-            filterd_tree: None,
+            filtered_tree: None,
             scroll: VerticalScroll::new(false, false),
             focus: Focus::Tree,
             key_config,
@@ -62,7 +62,7 @@ impl DatabasesComponent {
             None => pool.get_databases().await?,
         };
         self.tree = DatabaseTree::new(databases.as_slice(), &BTreeSet::new())?;
-        self.filterd_tree = None;
+        self.filtered_tree = None;
         self.filter.reset();
         Ok(())
     }
@@ -72,7 +72,7 @@ impl DatabasesComponent {
     }
 
     pub fn tree(&self) -> &DatabaseTree {
-        self.filterd_tree.as_ref().unwrap_or(&self.tree)
+        self.filtered_tree.as_ref().unwrap_or(&self.tree)
     }
 
     fn tree_item_to_span(
@@ -167,7 +167,7 @@ impl DatabasesComponent {
             .draw(f, chunks[0], matches!(self.focus, Focus::Filter))?;
 
         let tree_height = chunks[1].height as usize;
-        let tree = if let Some(tree) = self.filterd_tree.as_ref() {
+        let tree = if let Some(tree) = self.filtered_tree.as_ref() {
             tree
         } else {
             &self.tree
@@ -228,7 +228,7 @@ impl Component for DatabasesComponent {
         }
 
         if matches!(self.focus, Focus::Filter) {
-            self.filterd_tree = if self.filter.input_str().is_empty() {
+            self.filtered_tree = if self.filter.input_str().is_empty() {
                 None
             } else {
                 Some(self.tree.filter(self.filter.input_str()))
@@ -247,7 +247,7 @@ impl Component for DatabasesComponent {
             }
             key => {
                 if tree_nav(
-                    if let Some(tree) = self.filterd_tree.as_mut() {
+                    if let Some(tree) = self.filtered_tree.as_mut() {
                         tree
                     } else {
                         &mut self.tree

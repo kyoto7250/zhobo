@@ -7,7 +7,7 @@ license = "MIT"
 homepage = "https://github.com/kyoto7250/zhobo"
 repository = "https://github.com/kyoto7250/zhobo"
 readme = "README.md"
-description = "A cross-platform TUI database viewer written in Rust. Personaly maintained gobang project"
+description = "A cross-platform TUI database viewer written in Rust. Personally maintained gobang project"
 exclude = ["resources/"]
 
 [dependencies]
