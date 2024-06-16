@@ -19,7 +19,7 @@ use ratatui::{
 };
 
 pub enum Focus {
-    DabataseList,
+    DatabaseList,
     Table,
     ConnectionList,
 }
@@ -79,7 +79,7 @@ impl App {
             .split(f.size());
 
         self.databases
-            .draw(f, main_chunks[0], matches!(self.focus, Focus::DabataseList))?;
+            .draw(f, main_chunks[0], matches!(self.focus, Focus::DatabaseList))?;
 
         let right_chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -158,7 +158,7 @@ impl App {
             self.databases
                 .update(conn, self.pool.as_ref().unwrap())
                 .await?;
-            self.focus = Focus::DabataseList;
+            self.focus = Focus::DatabaseList;
             self.record_table.reset();
             self.tab.reset();
         }
@@ -232,7 +232,7 @@ impl App {
                     return Ok(EventState::Consumed);
                 }
             }
-            Focus::DabataseList => {
+            Focus::DatabaseList => {
                 if self.databases.event(key)?.is_consumed() {
                     return Ok(EventState::Consumed);
                 }
@@ -406,11 +406,11 @@ impl App {
         match self.focus {
             Focus::ConnectionList => {
                 if key == self.config.key_config.enter {
-                    self.focus = Focus::DabataseList;
+                    self.focus = Focus::DatabaseList;
                     return Ok(EventState::Consumed);
                 }
             }
-            Focus::DabataseList => {
+            Focus::DatabaseList => {
                 if key == self.config.key_config.focus_right && self.databases.tree_focused() {
                     self.focus = Focus::Table;
                     return Ok(EventState::Consumed);
@@ -418,7 +418,7 @@ impl App {
             }
             Focus::Table => {
                 if key == self.config.key_config.focus_left {
-                    self.focus = Focus::DabataseList;
+                    self.focus = Focus::DatabaseList;
                     return Ok(EventState::Consumed);
                 }
             }
