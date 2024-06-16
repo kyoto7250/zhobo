@@ -6,11 +6,11 @@ on:
       - 'v*'
 
 jobs:
-  permissions:
-    contents: write
   release:
     name: Release
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     timeout-minutes: 10
     outputs:
       zhobo_version: ${{ env.ZHOBO_VERSION }}
