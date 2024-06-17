@@ -1,5 +1,9 @@
 # zhobo
 
+![](https://github.com/kyoto7250/zhobo/workflows/CI/badge.svg)
+![](https://github.com/kyoto7250/zhobo/workflows/Release/badge.svg)
+
+
 `zhobo` is the rebaked [gobang project](https://github.com/TaKO8Ki/gobang).
 
 ## Features
