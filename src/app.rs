@@ -384,6 +384,11 @@ impl App {
         headers: Vec<String>,
         header_icons: Option<Vec<String>>,
     ) -> Vec<String> {
+        // If there are no execution results, there is no header, so do not combine icons.
+        // This logic will not work properly if the number of columns changes in the future release.
+        if headers.is_empty() {
+            return headers;
+        }
         if let Some(header_icons) = &header_icons {
             let mut new_headers = vec![String::new(); headers.len()];
             for (index, header) in headers.iter().enumerate() {
