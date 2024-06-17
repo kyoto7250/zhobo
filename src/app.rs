@@ -188,8 +188,23 @@ impl App {
                     orders,
                 )
                 .await?;
+            let total_row_count = self
+                .pool
+                .as_ref()
+                .unwrap()
+                .get_total_row_count(
+                    &database,
+                    &table,
+                    if self.record_table.filter.input_str().is_empty() {
+                        None
+                    } else {
+                        Some(self.record_table.filter.input_str())
+                    },
+                )
+                .await?;
             self.record_table.update(
                 records,
+                Some(total_row_count),
                 self.concat_headers(headers, header_icons),
                 database.clone(),
                 table.clone(),
@@ -246,8 +261,15 @@ impl App {
                             .unwrap()
                             .get_records(&database, &table, 0, None, None)
                             .await?;
+                        let total_row_count = self
+                            .pool
+                            .as_ref()
+                            .unwrap()
+                            .get_total_row_count(&database, &table, None)
+                            .await?;
                         self.record_table.update(
                             records,
+                            Some(total_row_count),
                             headers,
                             database.clone(),
                             table.clone(),

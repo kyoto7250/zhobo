@@ -268,7 +268,9 @@ impl Component for SqlEditorComponent {
                     database,
                     table,
                 } => {
-                    self.table.update(rows, headers, database, table, false);
+                    let count = Some(rows.len());
+                    self.table
+                        .update(rows, count, headers, database, table, false);
                     self.focus = Focus::Table;
                     self.query_result = None;
                 }

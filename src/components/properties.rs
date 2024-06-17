@@ -73,6 +73,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
+                None,
                 columns.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
@@ -87,6 +88,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
+                None,
                 constraints.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
@@ -101,6 +103,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
+                None,
                 foreign_keys.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),
@@ -115,6 +118,7 @@ impl PropertiesComponent {
                     .iter()
                     .map(|c| c.columns())
                     .collect::<Vec<Vec<String>>>(),
+                None,
                 indexes.first().unwrap().fields(),
                 database.clone(),
                 table.clone(),

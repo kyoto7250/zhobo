@@ -29,6 +29,12 @@ pub trait Pool: Send + Sync {
         database: &Database,
         table: &Table,
     ) -> anyhow::Result<Vec<Box<dyn TableRow>>>;
+    async fn get_total_row_count(
+        &self,
+        database: &Database,
+        table: &Table,
+        filter: Option<String>,
+    ) -> anyhow::Result<usize>;
     async fn get_constraints(
         &self,
         database: &Database,

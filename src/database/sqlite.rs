@@ -283,6 +283,25 @@ impl Pool for SqlitePool {
         Ok((headers, records))
     }
 
+    async fn get_total_row_count(
+        &self,
+        _database: &Database,
+        table: &Table,
+        filter: Option<String>,
+    ) -> anyhow::Result<usize> {
+        let query = if let Some(filter) = &filter {
+            format!(
+                "SELECT COUNT(*) FROM `{table}` WHERE {filter}",
+                table = table.name,
+                filter = filter,
+            )
+        } else {
+            format!("SELECT COUNT(*) FROM `{table}`", table = table.name,)
+        };
+        let res = sqlx::query(query.as_str()).fetch_one(&self.pool).await?;
+        Ok(res.get::<i64, usize>(0) as usize)
+    }
+
     async fn get_columns(
         &self,
         _database: &Database,
