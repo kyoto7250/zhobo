@@ -299,7 +299,9 @@ impl App {
                         }
 
                         if let Some(index) = self.record_table.table.selected_row.selected() {
-                            if index.saturating_add(1) % RECORDS_LIMIT_PER_PAGE as usize == 0 {
+                            if index.saturating_add(1) % RECORDS_LIMIT_PER_PAGE as usize == 0
+                                && index >= self.record_table.table.rows.len() - 1
+                            {
                                 if let Some((database, table)) =
                                     self.databases.tree().selected_table()
                                 {
@@ -310,7 +312,7 @@ impl App {
                                         .get_records(
                                             &database,
                                             &table,
-                                            index as u16,
+                                            index.saturating_add(1) as u16,
                                             if self.record_table.filter.input_str().is_empty() {
                                                 None
                                             } else {
