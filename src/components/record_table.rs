@@ -36,13 +36,20 @@ impl RecordTableComponent {
     pub fn update(
         &mut self,
         rows: Vec<Vec<String>>,
+        total_row_count: Option<usize>,
         headers: Vec<String>,
         database: Database,
         table: DTable,
         hold_cursor_position: bool,
     ) {
-        self.table
-            .update(rows, headers, database, table.clone(), hold_cursor_position);
+        self.table.update(
+            rows,
+            total_row_count,
+            headers,
+            database,
+            table.clone(),
+            hold_cursor_position,
+        );
         self.filter.table = Some(table);
     }
 

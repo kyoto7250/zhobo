@@ -100,6 +100,7 @@ impl OrderManager {
 pub struct TableComponent {
     pub headers: Vec<String>,
     pub rows: Vec<Vec<String>>,
+    pub total_row_count: Option<usize>,
     pub eod: bool,
     pub selected_row: TableState,
     orders: OrderManager,
@@ -117,6 +118,7 @@ impl TableComponent {
             selected_row: TableState::default(),
             headers: vec![],
             rows: vec![],
+            total_row_count: None,
             orders: OrderManager::new(),
             table: None,
             selected_column: 0,
@@ -137,6 +139,7 @@ impl TableComponent {
     pub fn update(
         &mut self,
         rows: Vec<Vec<String>>,
+        total_row_count: Option<usize>,
         headers: Vec<String>,
         database: Database,
         table: DTable,
@@ -148,6 +151,7 @@ impl TableComponent {
         }
         self.headers = headers;
         self.rows = rows;
+        self.total_row_count = total_row_count;
         self.selected_column = if hold_cusor_position {
             self.selected_column
         } else {
@@ -627,6 +631,7 @@ impl StatefulDrawableComponent for TableComponent {
             } else {
                 Some(self.rows.len())
             },
+            self.total_row_count,
             if self.headers.is_empty() {
                 None
             } else {

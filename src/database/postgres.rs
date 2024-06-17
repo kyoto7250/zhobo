@@ -346,6 +346,32 @@ impl Pool for PostgresPool {
         Ok((headers, records))
     }
 
+    async fn get_total_row_count(
+        &self,
+        database: &Database,
+        table: &Table,
+        filter: Option<String>,
+    ) -> anyhow::Result<usize> {
+        let query = if let Some(filter) = &filter {
+            format!(
+                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}" WHERE {filter}"#,
+                database = database.name,
+                table = table.name,
+                filter = filter,
+                table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
+            )
+        } else {
+            format!(
+                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}"#,
+                database = database.name,
+                table = table.name,
+                table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
+            )
+        };
+        let res = sqlx::query(query.as_str()).fetch_one(&self.pool).await?;
+        Ok(res.get::<i64, usize>(0) as usize)
+    }
+
     async fn get_columns(
         &self,
         database: &Database,
