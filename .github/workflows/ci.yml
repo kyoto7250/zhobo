@@ -80,7 +80,7 @@ jobs:
         - build: linux-arm
           os: ubuntu-24.04
           rust: stable
-          target: arm-unknown-linux-gnueabihf
+          target: arm-unknown-linux-gnueabihf:0.2.4
         - build: macos
           os: macos-latest
           rust: stable
