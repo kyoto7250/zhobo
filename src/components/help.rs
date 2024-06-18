@@ -24,15 +24,14 @@ pub struct HelpComponent {
 impl DrawableComponent for HelpComponent {
     fn draw(&self, f: &mut Frame, _area: Rect, _focused: bool) -> Result<()> {
         if self.visible {
-            const SIZE: (u16, u16) = (65, 24);
-            let scroll_threshold = SIZE.1 / 3;
+            let scroll_threshold = Self::HEIGHT / 3;
             let scroll = self.selection.saturating_sub(scroll_threshold);
 
             let area = Rect::new(
-                (f.size().width.saturating_sub(SIZE.0)) / 2,
-                (f.size().height.saturating_sub(SIZE.1)) / 2,
-                SIZE.0.min(f.size().width),
-                SIZE.1.min(f.size().height),
+                (f.size().width.saturating_sub(Self::WIDTH)) / 2,
+                (f.size().height.saturating_sub(Self::HEIGHT)) / 2,
+                Self::WIDTH.min(f.size().width),
+                Self::HEIGHT.min(f.size().height),
             );
 
             f.render_widget(Clear, area);
@@ -105,6 +104,8 @@ impl Component for HelpComponent {
 }
 
 impl HelpComponent {
+    const WIDTH: u16 = 65;
+    const HEIGHT: u16 = 24;
     pub const fn new(key_config: KeyConfig) -> Self {
         Self {
             cmds: vec![],
