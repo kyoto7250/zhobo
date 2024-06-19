@@ -39,6 +39,7 @@
     tab_constraints:                         Some(Char('5')),
     tab_foreign_keys:                        Some(Char('6')),
     tab_indexes:                             Some(Char('7')),
+    tab_definition:                          Some(Char('8')),
     extend_or_shorten_widget_width_to_right: Some(Char('>')),
     extend_or_shorten_widget_width_to_left:  Some(Char('<')),
 )

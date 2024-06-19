@@ -521,6 +521,12 @@ impl Pool for PostgresPool {
         Ok(foreign_keys)
     }
 
+    async fn get_definition(&self, database: &Database, table: &Table) -> anyhow::Result<String> {
+        let query = format!("SHOW CREATE TABLE `{}`.`{}`;", database.name, table.name);
+        let row = sqlx::query(query.as_str()).fetch_one(&self.pool).await?;
+        Ok(row.get::<String, usize>(1))
+    }
+
     async fn close(&self) {
         self.pool.close().await;
     }

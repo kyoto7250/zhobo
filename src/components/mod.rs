@@ -1,3 +1,4 @@
+pub mod clipboard;
 pub mod command;
 pub mod completion;
 pub mod connections;
@@ -17,7 +18,7 @@ pub mod utils;
 
 #[cfg(debug_assertions)]
 pub mod debug;
-
+pub use clipboard::ClipboardComponent;
 pub use command::CommandInfo;
 pub use completion::CompletionComponent;
 pub use connections::ConnectionsComponent;
@@ -34,7 +35,7 @@ pub use table_filter::TableFilterComponent;
 pub use table_status::TableStatusComponent;
 pub use table_value::TableValueComponent;
 
-use crate::database::Pool;
+use crate::{database::Pool, event::Key};
 use anyhow::Result;
 use async_trait::async_trait;
 use ratatui::{layout::Rect, Frame};
@@ -73,6 +74,12 @@ pub trait StatefulDrawableComponent {
 
 pub trait MovableComponent {
     fn draw(&mut self, f: &mut Frame, rect: Rect, focused: bool, x: u16, y: u16) -> Result<()>;
+}
+
+pub trait PropertyTrait {
+    fn draw(&mut self, f: &mut Frame, rect: Rect, focused: bool) -> Result<()>;
+    fn event(&mut self, key: Key) -> Result<EventState>;
+    fn selected_cells(&self) -> Option<String>;
 }
 
 /// base component trait

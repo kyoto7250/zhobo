@@ -1,3 +1,4 @@
+use super::PropertyTrait;
 use super::{
     utils::scroll_vertical::VerticalScroll, Component, DrawableComponent, EventState,
     StatefulDrawableComponent, TableStatusComponent, TableValueComponent,
@@ -525,6 +526,20 @@ impl TableComponent {
             self.rows(far_left_column_index, far_right_column_index),
             constraints,
         )
+    }
+}
+
+impl PropertyTrait for TableComponent {
+    fn draw(&mut self, f: &mut Frame, area: Rect, focused: bool) -> Result<()> {
+        StatefulDrawableComponent::draw(self, f, area, focused)
+    }
+
+    fn event(&mut self, key: Key) -> Result<EventState> {
+        Component::event(self, key)
+    }
+
+    fn selected_cells(&self) -> Option<String> {
+        TableComponent::selected_cells(self)
     }
 }
 

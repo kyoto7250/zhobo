@@ -1,4 +1,4 @@
-use super::{Component, EventState, StatefulDrawableComponent};
+use super::{ClipboardComponent, Component, EventState, PropertyTrait, StatefulDrawableComponent};
 use crate::clipboard::copy_to_clipboard;
 use crate::components::command::{self, CommandInfo};
 use crate::components::TableComponent;
@@ -21,6 +21,7 @@ pub enum Focus {
     Constraint,
     ForeignKey,
     Index,
+    Definition,
 }
 
 impl std::fmt::Display for Focus {
@@ -34,6 +35,7 @@ pub struct PropertiesComponent {
     constraint_table: TableComponent,
     foreign_key_table: TableComponent,
     index_table: TableComponent,
+    definition_viewer: ClipboardComponent,
     focus: Focus,
     key_config: KeyConfig,
 }
@@ -45,17 +47,19 @@ impl PropertiesComponent {
             constraint_table: TableComponent::new(key_config.clone()),
             foreign_key_table: TableComponent::new(key_config.clone()),
             index_table: TableComponent::new(key_config.clone()),
+            definition_viewer: ClipboardComponent::new(key_config.clone()),
             focus: Focus::Column,
             key_config,
         }
     }
 
-    fn focused_component(&mut self) -> &mut TableComponent {
+    fn focused_component(&mut self) -> &mut dyn PropertyTrait {
         match self.focus {
             Focus::Column => &mut self.column_table,
             Focus::Constraint => &mut self.constraint_table,
             Focus::ForeignKey => &mut self.foreign_key_table,
             Focus::Index => &mut self.index_table,
+            Focus::Definition => &mut self.definition_viewer,
         }
     }
 
@@ -125,6 +129,13 @@ impl PropertiesComponent {
                 false,
             );
         }
+        // create table sql is here
+        self.definition_viewer.reset();
+        let definition = pool.get_definition(&database, &table).await?;
+        if !definition.is_empty() {
+            self.definition_viewer
+                .update(definition, database.clone(), table.clone())
+        }
         Ok(())
     }
 
@@ -140,6 +151,10 @@ impl PropertiesComponent {
                 command::tab_foreign_keys(&self.key_config).name,
             ),
             (Focus::Index, command::tab_indexes(&self.key_config).name),
+            (
+                Focus::Definition,
+                command::tab_definition(&self.key_config).name,
+            ),
         ]
     }
 }
@@ -201,6 +216,8 @@ impl Component for PropertiesComponent {
             self.focus = Focus::ForeignKey;
         } else if key == self.key_config.tab_indexes {
             self.focus = Focus::Index;
+        } else if key == self.key_config.tab_definition {
+            self.focus = Focus::Definition;
         }
         Ok(EventState::NotConsumed)
     }

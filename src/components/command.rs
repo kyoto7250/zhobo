@@ -148,6 +148,13 @@ pub fn tab_constraints(key: &KeyConfig) -> CommandText {
     )
 }
 
+pub fn tab_definition(key: &KeyConfig) -> CommandText {
+    CommandText::new(
+        format!("Definition [{}]", key.tab_definition),
+        CMD_GROUP_TABLE,
+    )
+}
+
 pub fn tab_foreign_keys(key: &KeyConfig) -> CommandText {
     CommandText::new(
         format!("Foreign keys [{}]", key.tab_foreign_keys),
@@ -173,8 +180,15 @@ pub fn tab_properties(key: &KeyConfig) -> CommandText {
 pub fn toggle_tabs(key_config: &KeyConfig) -> CommandText {
     CommandText::new(
         format!(
-            "Tab [{},{},{}]",
-            key_config.tab_records, key_config.tab_properties, key_config.tab_sql_editor
+            "Tab [{},{},{},{},{},{},{},{}]",
+            key_config.tab_records,
+            key_config.tab_properties,
+            key_config.tab_sql_editor,
+            key_config.tab_columns,
+            key_config.tab_constraints,
+            key_config.tab_foreign_keys,
+            key_config.tab_indexes,
+            key_config.tab_definition
         ),
         CMD_GROUP_GENERAL,
     )
@@ -183,11 +197,12 @@ pub fn toggle_tabs(key_config: &KeyConfig) -> CommandText {
 pub fn toggle_property_tabs(key_config: &KeyConfig) -> CommandText {
     CommandText::new(
         format!(
-            "Tab [{},{},{},{}]",
+            "Tab [{},{},{},{},{}]",
             key_config.tab_columns,
             key_config.tab_constraints,
             key_config.tab_foreign_keys,
-            key_config.tab_indexes
+            key_config.tab_indexes,
+            key_config.tab_definition
         ),
         CMD_GROUP_PROPERTIES,
     )
