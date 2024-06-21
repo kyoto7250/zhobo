@@ -329,7 +329,7 @@ impl TableComponent {
         }
     }
 
-    pub fn selected_cells(&self) -> Option<String> {
+    pub fn content(&self) -> Option<String> {
         if let Some((x, y)) = self.selection_area_corner {
             let selected_row_index = self.selected_row.selected()?;
             return Some(
@@ -538,8 +538,8 @@ impl PropertyTrait for TableComponent {
         Component::event(self, key)
     }
 
-    fn selected_cells(&self) -> Option<String> {
-        TableComponent::selected_cells(self)
+    fn content(&self) -> Option<String> {
+        TableComponent::content(self)
     }
 }
 
@@ -637,8 +637,7 @@ impl StatefulDrawableComponent for TableComponent {
             },
         );
 
-        TableValueComponent::new(self.selected_cells().unwrap_or_default())
-            .draw(f, chunks[0], focused)?;
+        TableValueComponent::new(self.content().unwrap_or_default()).draw(f, chunks[0], focused)?;
 
         TableStatusComponent::new(
             if self.rows.is_empty() {
@@ -768,7 +767,7 @@ mod test {
         component.selected_column = 1;
         component.expand_selected_area_x(false);
         assert_eq!(component.selection_area_corner, Some((0, 1)));
-        assert_eq!(component.selected_cells(), Some("d,e".to_string()));
+        assert_eq!(component.content(), Some("d,e".to_string()));
     }
 
     #[test]
@@ -793,7 +792,7 @@ mod test {
         component.selected_column = 1;
         component.expand_selected_area_x(true);
         assert_eq!(component.selection_area_corner, Some((2, 1)));
-        assert_eq!(component.selected_cells(), Some("e,f".to_string()));
+        assert_eq!(component.content(), Some("e,f".to_string()));
     }
 
     #[test]
@@ -817,7 +816,7 @@ mod test {
         component.selected_column = 1;
         component.expand_selected_area_y(false);
         assert_eq!(component.selection_area_corner, Some((1, 0)));
-        assert_eq!(component.selected_cells(), Some("b\ne".to_string()));
+        assert_eq!(component.content(), Some("b\ne".to_string()));
     }
 
     #[test]
@@ -841,7 +840,7 @@ mod test {
         component.selected_column = 1;
         component.expand_selected_area_y(true);
         assert_eq!(component.selection_area_corner, Some((1, 1)));
-        assert_eq!(component.selected_cells(), Some("b\ne".to_string()));
+        assert_eq!(component.content(), Some("b\ne".to_string()));
     }
 
     #[test]
@@ -857,7 +856,7 @@ mod test {
         component.selected_row.select(Some(0));
         component.expand_selected_by_horizontal_line();
         assert_eq!(component.selection_area_corner, Some((2, 0)));
-        assert_eq!(component.selected_cells(), Some("d,e,f".to_string()));
+        assert_eq!(component.content(), Some("d,e,f".to_string()));
 
         // undo select horizontal line
         component.expand_selected_by_horizontal_line();
@@ -867,7 +866,7 @@ mod test {
         component.expand_selected_area_y(true);
         component.expand_selected_by_horizontal_line();
         assert_eq!(component.selection_area_corner, Some((2, 1)));
-        assert_eq!(component.selected_cells(), Some("d,e,f\ng,h,i".to_string()));
+        assert_eq!(component.content(), Some("d,e,f\ng,h,i".to_string()));
     }
 
     #[test]
@@ -896,7 +895,7 @@ mod test {
             vec!["d", "e", "f"].iter().map(|h| h.to_string()).collect(),
         ];
         component.selected_row.select(Some(0));
-        assert_eq!(component.selected_cells(), Some("a".to_string()));
+        assert_eq!(component.content(), Some("a".to_string()));
     }
 
     #[test]
@@ -913,7 +912,7 @@ mod test {
         ];
         component.selected_row.select(Some(0));
         component.selection_area_corner = Some((1, 1));
-        assert_eq!(component.selected_cells(), Some("a,b\nd,e".to_string()));
+        assert_eq!(component.content(), Some("a,b\nd,e".to_string()));
     }
 
     #[test]

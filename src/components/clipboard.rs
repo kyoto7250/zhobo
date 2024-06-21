@@ -125,7 +125,7 @@ impl PropertyTrait for ClipboardComponent {
         Ok(EventState::NotConsumed)
     }
 
-    fn selected_cells(&self) -> Option<String> {
+    fn content(&self) -> Option<String> {
         self.content.clone()
     }
 }

@@ -205,7 +205,7 @@ impl Component for PropertiesComponent {
         self.focused_component().event(key)?;
 
         if key == self.key_config.copy {
-            if let Some(text) = self.focused_component().selected_cells() {
+            if let Some(text) = self.focused_component().content() {
                 copy_to_clipboard(text.as_str())?
             }
         } else if key == self.key_config.tab_columns {

@@ -79,7 +79,7 @@ pub trait MovableComponent {
 pub trait PropertyTrait {
     fn draw(&mut self, f: &mut Frame, rect: Rect, focused: bool) -> Result<()>;
     fn event(&mut self, key: Key) -> Result<EventState>;
-    fn selected_cells(&self) -> Option<String>;
+    fn content(&self) -> Option<String>;
 }
 
 /// base component trait
