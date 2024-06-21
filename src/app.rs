@@ -302,7 +302,7 @@ impl App {
                         };
 
                         if key == self.config.key_config.copy {
-                            if let Some(text) = self.record_table.table.selected_cells() {
+                            if let Some(text) = self.record_table.table.content() {
                                 copy_to_clipboard(text.as_str())?
                             }
                         }

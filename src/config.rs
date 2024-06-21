@@ -126,6 +126,7 @@ pub struct KeyConfig {
     pub tab_records: Key,
     pub tab_columns: Key,
     pub tab_constraints: Key,
+    pub tab_definition: Key,
     pub tab_foreign_keys: Key,
     pub tab_indexes: Key,
     pub tab_sql_editor: Key,
@@ -173,6 +174,7 @@ impl Default for KeyConfig {
             tab_constraints: Key::Char('5'),
             tab_foreign_keys: Key::Char('6'),
             tab_indexes: Key::Char('7'),
+            tab_definition: Key::Char('8'),
             extend_or_shorten_widget_width_to_right: Key::Char('>'),
             extend_or_shorten_widget_width_to_left: Key::Char('<'),
         }

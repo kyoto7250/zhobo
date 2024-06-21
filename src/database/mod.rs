@@ -50,6 +50,7 @@ pub trait Pool: Send + Sync {
         database: &Database,
         table: &Table,
     ) -> anyhow::Result<Vec<Box<dyn TableRow>>>;
+    async fn get_definition(&self, database: &Database, table: &Table) -> anyhow::Result<String>;
     async fn close(&self);
 }
 

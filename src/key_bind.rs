@@ -42,6 +42,7 @@ pub struct KeyBind {
     pub tab_constraints: Option<Key>,
     pub tab_foreign_keys: Option<Key>,
     pub tab_indexes: Option<Key>,
+    pub tab_definition: Option<Key>,
     pub tab_sql_editor: Option<Key>,
     pub tab_properties: Option<Key>,
     pub extend_or_shorten_widget_width_to_right: Option<Key>,
@@ -129,6 +130,7 @@ impl From<KeyBind> for KeyConfig {
         merge!(kc.tab_columns, kb.tab_columns);
         merge!(kc.tab_constraints, kb.tab_constraints);
         merge!(kc.tab_foreign_keys, kb.tab_foreign_keys);
+        merge!(kc.tab_definition, kb.tab_definition);
         merge!(kc.tab_indexes, kb.tab_indexes);
         merge!(
             kc.extend_or_shorten_widget_width_to_right,
