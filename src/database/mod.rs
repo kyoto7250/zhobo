@@ -9,8 +9,6 @@ pub use sqlite::SqlitePool;
 use crate::tree::{Child, Database, Table};
 use async_trait::async_trait;
 
-pub const RECORDS_LIMIT_PER_PAGE: u8 = 200;
-
 #[async_trait]
 pub trait Pool: Send + Sync {
     async fn execute(&self, query: &String) -> anyhow::Result<ExecuteResult>;

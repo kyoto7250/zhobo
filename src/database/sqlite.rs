@@ -1,6 +1,6 @@
 use crate::get_or_null;
 
-use super::{ExecuteResult, Pool, TableRow, RECORDS_LIMIT_PER_PAGE};
+use super::{ExecuteResult, Pool, TableRow};
 use crate::tree::{Child, Database, Table};
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
@@ -11,15 +11,17 @@ use std::time::Duration;
 
 pub struct SqlitePool {
     pool: sqlx::sqlite::SqlitePool,
+    limit_size: usize,
 }
 
 impl SqlitePool {
-    pub async fn new(database_url: &str) -> anyhow::Result<Self> {
+    pub async fn new(database_url: &str, limit_size: usize) -> anyhow::Result<Self> {
         Ok(Self {
             pool: SqlitePoolOptions::new()
                 .acquire_timeout(Duration::from_secs(5))
                 .connect(database_url)
                 .await?,
+            limit_size: limit_size,
         })
     }
 }
@@ -238,7 +240,7 @@ impl Pool for SqlitePool {
                 table = table.name,
                 filter = filter,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE,
+                limit = self.limit_size,
                 orders = orders
             )
         } else if let Some(filter) = filter {
@@ -247,7 +249,7 @@ impl Pool for SqlitePool {
                 table = table.name,
                 filter = filter,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else if let Some(orders) = orders {
             format!(
@@ -255,14 +257,14 @@ impl Pool for SqlitePool {
                 table = table.name,
                 orders = orders,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else {
             format!(
                 "SELECT * FROM `{table}` LIMIT {page}, {limit}",
                 table = table.name,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         };
         let mut rows = sqlx::query(query.as_str()).fetch(&self.pool);
