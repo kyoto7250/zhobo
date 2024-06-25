@@ -67,6 +67,18 @@ The location of the file depends on your OS:
 
 Sample config.toml file is `examples/key_bind.ron`:
 
+### table config
+
+The location of the file depends on your OS:
+
+- macOS: `$HOME/.config/zhobo/table_config.toml`
+- Linux: `$HOME/.config/zhobo/table_config.toml`
+- Windows: `%APPDATA%/zhobo/tabel_config.toml`
+
+```bash
+limit_size = 200
+```
+
 ## contribution
 
 Contributions are welcome.

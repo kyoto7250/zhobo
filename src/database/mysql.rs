@@ -1,6 +1,6 @@
 use crate::get_or_null;
 
-use super::{ExecuteResult, Pool, TableRow, RECORDS_LIMIT_PER_PAGE};
+use super::{ExecuteResult, Pool, TableRow};
 use crate::tree::{Child, Database, Table};
 use async_trait::async_trait;
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
@@ -11,15 +11,17 @@ use std::time::Duration;
 
 pub struct MySqlPool {
     pool: sqlx::mysql::MySqlPool,
+    limit_size: usize,
 }
 
 impl MySqlPool {
-    pub async fn new(database_url: &str) -> anyhow::Result<Self> {
+    pub async fn new(database_url: &str, limit_size: usize) -> anyhow::Result<Self> {
         Ok(Self {
             pool: MySqlPoolOptions::new()
                 .acquire_timeout(Duration::from_secs(5))
                 .connect(database_url)
                 .await?,
+            limit_size,
         })
     }
 }
@@ -237,7 +239,7 @@ impl Pool for MySqlPool {
                 table = table.name,
                 filter = filter,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE,
+                limit = self.limit_size,
                 orders = orders
             )
         } else if let Some(filter) = filter {
@@ -247,7 +249,7 @@ impl Pool for MySqlPool {
                 table = table.name,
                 filter = filter,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE,
+                limit = self.limit_size,
             )
         } else if let Some(orders) = orders {
             format!(
@@ -256,7 +258,7 @@ impl Pool for MySqlPool {
                 table = table.name,
                 orders = orders,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE,
+                limit = self.limit_size,
             )
         } else {
             format!(
@@ -264,7 +266,7 @@ impl Pool for MySqlPool {
                 database = database.name,
                 table = table.name,
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size,
             )
         };
         let mut rows = sqlx::query(query.as_str()).fetch(&self.pool);

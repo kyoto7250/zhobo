@@ -10,7 +10,7 @@ use crate::components::{
     CommandInfo, Component as _, DrawableComponent as _, EventState, StatefulDrawableComponent,
 };
 use crate::config::Config;
-use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool, RECORDS_LIMIT_PER_PAGE};
+use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool};
 use crate::event::Key;
 use ratatui::layout::Flex;
 use ratatui::{
@@ -144,15 +144,27 @@ impl App {
 
             self.pool = if conn.is_mysql() {
                 Some(Box::new(
-                    MySqlPool::new(conn.database_url()?.as_str()).await?,
+                    MySqlPool::new(
+                        conn.database_url()?.as_str(),
+                        self.config.table_config.limit_size,
+                    )
+                    .await?,
                 ))
             } else if conn.is_postgres() {
                 Some(Box::new(
-                    PostgresPool::new(conn.database_url()?.as_str()).await?,
+                    PostgresPool::new(
+                        conn.database_url()?.as_str(),
+                        self.config.table_config.limit_size,
+                    )
+                    .await?,
                 ))
             } else {
                 Some(Box::new(
-                    SqlitePool::new(conn.database_url()?.as_str()).await?,
+                    SqlitePool::new(
+                        conn.database_url()?.as_str(),
+                        self.config.table_config.limit_size,
+                    )
+                    .await?,
                 ))
             };
             self.databases
@@ -321,7 +333,7 @@ impl App {
                         }
 
                         if let Some(index) = self.record_table.table.selected_row.selected() {
-                            if index.saturating_add(1) % RECORDS_LIMIT_PER_PAGE as usize == 0
+                            if index.saturating_add(1) % self.config.table_config.limit_size == 0
                                 && index >= self.record_table.table.rows.len() - 1
                             {
                                 if let Some((database, table)) =

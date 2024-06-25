@@ -20,6 +20,10 @@ pub struct CliConfig {
     /// Set the key bind file
     #[structopt(long, short, global = true)]
     key_bind_path: Option<std::path::PathBuf>,
+
+    /// Set the table viewer config
+    #[structopt(long, short, global = true)]
+    table_config_path: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -36,6 +40,8 @@ pub struct Config {
     pub key_config: KeyConfig,
     #[serde(default)]
     pub log_level: LogLevel,
+    #[serde(default)]
+    pub table_config: TableConfig,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -74,6 +80,7 @@ impl Default for Config {
             }],
             key_config: KeyConfig::default(),
             log_level: LogLevel::default(),
+            table_config: TableConfig::default(),
         }
     }
 }
@@ -89,6 +96,18 @@ pub struct Connection {
     password: Option<String>,
     unix_domain_socket: Option<std::path::PathBuf>,
     pub database: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+#[cfg_attr(test, derive(Serialize, PartialEq))]
+pub struct TableConfig {
+    pub limit_size: usize,
+}
+
+impl Default for TableConfig {
+    fn default() -> Self {
+        Self { limit_size: 200 }
+    }
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -195,25 +214,51 @@ impl Config {
             get_app_config_path()?.join("key_bind.ron")
         };
 
+        let table_config_path = if let Some(table_config_path) = &config.table_config_path {
+            table_config_path.clone()
+        } else {
+            get_app_config_path()?.join("table_config.toml")
+        };
+
+        let table_config = Config::_load_table_config(table_config_path)?;
         if let Ok(file) = File::open(config_path) {
             let mut buf_reader = BufReader::new(file);
             let mut contents = String::new();
             buf_reader.read_to_string(&mut contents)?;
             let config: Result<ReadConfig, toml::de::Error> = toml::from_str(&contents);
             match config {
-                Ok(config) => return Ok(Config::build(config, key_bind_path)),
-                Err(e) => panic!("fail to parse config file: {}", e),
+                Ok(config) => return Ok(Config::build(config, key_bind_path, table_config)),
+                Err(e) => panic!("fail to parse connection config file: {}", e),
             }
         }
-        Ok(Config::default())
+
+        Ok(Config {
+            table_config,
+            ..Default::default()
+        })
     }
 
-    fn build(read_config: ReadConfig, key_bind_path: PathBuf) -> Self {
+    fn _load_table_config(table_config_path: PathBuf) -> anyhow::Result<TableConfig> {
+        if let Ok(file) = File::open(table_config_path) {
+            let mut buf_reader = BufReader::new(file);
+            let mut contents = String::new();
+            buf_reader.read_to_string(&mut contents)?;
+            let table_config: Result<TableConfig, toml::de::Error> = toml::from_str(&contents);
+            match table_config {
+                Ok(config) => return Ok(config),
+                Err(e) => panic!("fail to parse table config: {}", e),
+            }
+        }
+        Ok(TableConfig::default())
+    }
+
+    fn build(read_config: ReadConfig, key_bind_path: PathBuf, table_config: TableConfig) -> Self {
         let key_bind = KeyBind::load(key_bind_path).unwrap();
         Config {
             conn: read_config.conn,
             log_level: read_config.log_level,
             key_config: KeyConfig::from(key_bind),
+            table_config,
         }
     }
 }
@@ -224,7 +269,7 @@ impl Connection {
             .password
             .as_ref()
             .map_or(String::new(), |p| p.to_string());
-        return self.build_database_url(password);
+        self.build_database_url(password)
     }
 
     fn masked_database_url(&self) -> anyhow::Result<String> {
@@ -234,7 +279,7 @@ impl Connection {
             .map_or(String::new(), |p| p.to_string());
 
         let masked_password = "*".repeat(password.len());
-        return self.build_database_url(masked_password);
+        self.build_database_url(masked_password)
     }
 
     fn build_database_url(&self, password: String) -> anyhow::Result<String> {
@@ -425,6 +470,7 @@ mod test {
         let cli_config = CliConfig {
             config_path: Some(Path::new("examples/config.toml").to_path_buf()),
             key_bind_path: Some(Path::new("examples/key_bind.ron").to_path_buf()),
+            table_config_path: Some(Path::new("examples/table_config.toml").to_path_buf()),
         };
 
         assert_eq!(Config::new(&cli_config).is_ok(), true);

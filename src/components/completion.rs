@@ -63,10 +63,7 @@ impl CompletionComponent {
         let i = match self.state.selected() {
             Some(i) => {
                 if i == 0 {
-                    self.filtered_candidates()
-                        .count()
-                        .checked_sub(1)
-                        .unwrap_or(0)
+                    self.filtered_candidates().count().saturating_sub(1)
                 } else {
                     i - 1
                 }

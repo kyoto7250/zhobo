@@ -1,6 +1,6 @@
 use crate::get_or_null;
 
-use super::{ExecuteResult, Pool, TableRow, RECORDS_LIMIT_PER_PAGE};
+use super::{ExecuteResult, Pool, TableRow};
 use crate::tree::{Child, Database, Schema, Table};
 use async_trait::async_trait;
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
@@ -12,15 +12,17 @@ use std::time::Duration;
 
 pub struct PostgresPool {
     pool: PgPool,
+    limit_size: usize,
 }
 
 impl PostgresPool {
-    pub async fn new(database_url: &str) -> anyhow::Result<Self> {
+    pub async fn new(database_url: &str, limit_size: usize) -> anyhow::Result<Self> {
         Ok(Self {
             pool: PgPoolOptions::new()
                 .acquire_timeout(Duration::from_secs(5))
                 .connect(database_url)
                 .await?,
+            limit_size,
         })
     }
 }
@@ -256,7 +258,7 @@ impl Pool for PostgresPool {
                 orders = orders,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else if let Some(filter) = &filter {
             format!(
@@ -266,7 +268,7 @@ impl Pool for PostgresPool {
                 filter = filter,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else if let Some(orders) = &orders {
             format!(
@@ -276,7 +278,7 @@ impl Pool for PostgresPool {
                 orders = orders,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else {
             format!(
@@ -285,7 +287,7 @@ impl Pool for PostgresPool {
                 table = table.name,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         };
         let mut rows = sqlx::query(query.as_str()).fetch(&self.pool);
@@ -550,7 +552,7 @@ impl PostgresPool {
                 orders = orders,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else if let Some(filter) = filter {
             format!(
@@ -560,7 +562,7 @@ impl PostgresPool {
                 filter = filter,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else if let Some(orders) = orders {
             format!(
@@ -570,7 +572,7 @@ impl PostgresPool {
                 orders = orders,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         } else {
             format!(
@@ -579,7 +581,7 @@ impl PostgresPool {
                 table = table.name,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
                 page = page,
-                limit = RECORDS_LIMIT_PER_PAGE
+                limit = self.limit_size
             )
         };
         let json: Vec<(serde_json::Value,)> =
