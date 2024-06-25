@@ -22,7 +22,7 @@ impl PostgresPool {
                 .acquire_timeout(Duration::from_secs(5))
                 .connect(database_url)
                 .await?,
-            limit_size: limit_size,
+            limit_size,
         })
     }
 }

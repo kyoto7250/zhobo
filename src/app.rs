@@ -333,9 +333,7 @@ impl App {
                         }
 
                         if let Some(index) = self.record_table.table.selected_row.selected() {
-                            if index.saturating_add(1)
-                                % self.config.table_config.limit_size as usize
-                                == 0
+                            if index.saturating_add(1) % self.config.table_config.limit_size == 0
                                 && index >= self.record_table.table.rows.len() - 1
                             {
                                 if let Some((database, table)) =

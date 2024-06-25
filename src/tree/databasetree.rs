@@ -3,7 +3,7 @@ use crate::tree::{
     tree_iter::TreeIterator,
 };
 use crate::tree::{Database, Table};
-use std::{collections::BTreeSet, usize};
+use std::collections::BTreeSet;
 
 #[derive(Copy, Clone, Debug)]
 pub enum MoveSelection {

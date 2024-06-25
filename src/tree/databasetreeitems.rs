@@ -1,10 +1,7 @@
 use crate::tree::{error::Result, treeitems_iter::TreeItemsIterator};
 use crate::tree::{item::DatabaseTreeItemKind, DatabaseTreeItem};
 use crate::tree::{Child, Database};
-use std::{
-    collections::{BTreeSet, HashMap},
-    usize,
-};
+use std::collections::{BTreeSet, HashMap};
 
 #[derive(Default)]
 pub struct DatabaseTreeItems {
@@ -78,8 +75,8 @@ impl DatabaseTreeItems {
         TreeItemsIterator::new(self, start, max_amount)
     }
 
-    fn push_databases<'a>(
-        database: &'a Database,
+    fn push_databases(
+        database: &Database,
         nodes: &mut Vec<DatabaseTreeItem>,
         items_added: &mut HashMap<String, usize>,
         collapsed: &BTreeSet<&String>,

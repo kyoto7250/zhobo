@@ -232,9 +232,10 @@ impl Config {
             }
         }
 
-        let mut config = Config::default();
-        config.table_config = table_config;
-        Ok(config)
+        Ok(Config {
+            table_config,
+            ..Default::default()
+        })
     }
 
     fn _load_table_config(table_config_path: PathBuf) -> anyhow::Result<TableConfig> {
@@ -257,7 +258,7 @@ impl Config {
             conn: read_config.conn,
             log_level: read_config.log_level,
             key_config: KeyConfig::from(key_bind),
-            table_config: table_config,
+            table_config,
         }
     }
 }
@@ -268,7 +269,7 @@ impl Connection {
             .password
             .as_ref()
             .map_or(String::new(), |p| p.to_string());
-        return self.build_database_url(password);
+        self.build_database_url(password)
     }
 
     fn masked_database_url(&self) -> anyhow::Result<String> {
@@ -278,7 +279,7 @@ impl Connection {
             .map_or(String::new(), |p| p.to_string());
 
         let masked_password = "*".repeat(password.len());
-        return self.build_database_url(masked_password);
+        self.build_database_url(masked_password)
     }
 
     fn build_database_url(&self, password: String) -> anyhow::Result<String> {

@@ -35,11 +35,11 @@ impl Order {
     fn query(&self) -> String {
         let order = if self.is_asc { "ASC" } else { "DESC" };
 
-        return format!(
+        format!(
             "{column} {order}",
             column = self.column_number,
             order = order
-        );
+        )
     }
 }
 
