@@ -609,6 +609,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -632,6 +634,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -654,6 +658,8 @@ mod test {
             password: None,
             database: None,
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let sqlite_result = sqlite_conn.database_url().unwrap();
