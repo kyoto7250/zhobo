@@ -20,10 +20,6 @@ pub struct CliConfig {
     /// Set the key bind file
     #[structopt(long, short, global = true)]
     key_bind_path: Option<std::path::PathBuf>,
-
-    /// Set the table viewer config
-    #[structopt(long, short, global = true)]
-    table_config_path: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -40,8 +36,6 @@ pub struct Config {
     pub key_config: KeyConfig,
     #[serde(default)]
     pub log_level: LogLevel,
-    #[serde(default)]
-    pub table_config: TableConfig,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -77,10 +71,11 @@ impl Default for Config {
                 password: None,
                 database: None,
                 unix_domain_socket: None,
+                limit_size: 200,
+                timeout_second: 5,
             }],
             key_config: KeyConfig::default(),
             log_level: LogLevel::default(),
-            table_config: TableConfig::default(),
         }
     }
 }
@@ -96,18 +91,18 @@ pub struct Connection {
     password: Option<String>,
     unix_domain_socket: Option<std::path::PathBuf>,
     pub database: Option<String>,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(test, derive(Serialize, PartialEq))]
-pub struct TableConfig {
+    #[serde(default = "default_limit_size")]
     pub limit_size: usize,
+    #[serde(default = "default_timeout_second")]
+    pub timeout_second: u64,
 }
 
-impl Default for TableConfig {
-    fn default() -> Self {
-        Self { limit_size: 200 }
-    }
+fn default_limit_size() -> usize {
+    200
+}
+
+fn default_timeout_second() -> u64 {
+    5
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -214,51 +209,26 @@ impl Config {
             get_app_config_path()?.join("key_bind.ron")
         };
 
-        let table_config_path = if let Some(table_config_path) = &config.table_config_path {
-            table_config_path.clone()
-        } else {
-            get_app_config_path()?.join("table_config.toml")
-        };
-
-        let table_config = Config::_load_table_config(table_config_path)?;
         if let Ok(file) = File::open(config_path) {
             let mut buf_reader = BufReader::new(file);
             let mut contents = String::new();
             buf_reader.read_to_string(&mut contents)?;
             let config: Result<ReadConfig, toml::de::Error> = toml::from_str(&contents);
             match config {
-                Ok(config) => return Ok(Config::build(config, key_bind_path, table_config)),
+                Ok(config) => return Ok(Config::build(config, key_bind_path)),
                 Err(e) => panic!("fail to parse connection config file: {}", e),
             }
         }
 
-        Ok(Config {
-            table_config,
-            ..Default::default()
-        })
+        Ok(Config::default())
     }
 
-    fn _load_table_config(table_config_path: PathBuf) -> anyhow::Result<TableConfig> {
-        if let Ok(file) = File::open(table_config_path) {
-            let mut buf_reader = BufReader::new(file);
-            let mut contents = String::new();
-            buf_reader.read_to_string(&mut contents)?;
-            let table_config: Result<TableConfig, toml::de::Error> = toml::from_str(&contents);
-            match table_config {
-                Ok(config) => return Ok(config),
-                Err(e) => panic!("fail to parse table config: {}", e),
-            }
-        }
-        Ok(TableConfig::default())
-    }
-
-    fn build(read_config: ReadConfig, key_bind_path: PathBuf, table_config: TableConfig) -> Self {
+    fn build(read_config: ReadConfig, key_bind_path: PathBuf) -> Self {
         let key_bind = KeyBind::load(key_bind_path).unwrap();
         Config {
             conn: read_config.conn,
             log_level: read_config.log_level,
             key_config: KeyConfig::from(key_bind),
-            table_config,
         }
     }
 }
@@ -470,7 +440,6 @@ mod test {
         let cli_config = CliConfig {
             config_path: Some(Path::new("examples/config.toml").to_path_buf()),
             key_bind_path: Some(Path::new("examples/key_bind.ron").to_path_buf()),
-            table_config_path: Some(Path::new("examples/table_config.toml").to_path_buf()),
         };
 
         assert_eq!(Config::new(&cli_config).is_ok(), true);
@@ -489,6 +458,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let mysql_result = mysql_conn.database_url().unwrap();
@@ -507,6 +478,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let postgres_result = postgres_conn.database_url().unwrap();
@@ -525,6 +498,8 @@ mod test {
             password: None,
             database: None,
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let sqlite_result = sqlite_conn.database_url().unwrap();
@@ -564,6 +539,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -587,6 +564,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -609,6 +588,8 @@ mod test {
             password: None,
             database: None,
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let sqlite_result = sqlite_conn.database_url().unwrap();
@@ -628,6 +609,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -651,6 +634,8 @@ mod test {
             password: Some("password".to_owned()),
             database: Some("city".to_owned()),
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         assert_eq!(
@@ -673,6 +658,8 @@ mod test {
             password: None,
             database: None,
             unix_domain_socket: None,
+            limit_size: 200,
+            timeout_second: 5,
         };
 
         let sqlite_result = sqlite_conn.database_url().unwrap();

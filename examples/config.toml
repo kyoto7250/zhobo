@@ -3,6 +3,8 @@ type = "mysql"
 user = "root"
 host = "localhost"
 port = 3306
+limit_size = 400
+timeout_second = 5
 
 [[conn]]
 type = "mysql"

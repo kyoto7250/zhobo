@@ -146,7 +146,8 @@ impl App {
                 Some(Box::new(
                     MySqlPool::new(
                         conn.database_url()?.as_str(),
-                        self.config.table_config.limit_size,
+                        conn.limit_size,
+                        conn.timeout_second,
                     )
                     .await?,
                 ))
@@ -154,7 +155,8 @@ impl App {
                 Some(Box::new(
                     PostgresPool::new(
                         conn.database_url()?.as_str(),
-                        self.config.table_config.limit_size,
+                        conn.limit_size,
+                        conn.timeout_second,
                     )
                     .await?,
                 ))
@@ -162,7 +164,8 @@ impl App {
                 Some(Box::new(
                     SqlitePool::new(
                         conn.database_url()?.as_str(),
-                        self.config.table_config.limit_size,
+                        conn.limit_size,
+                        conn.timeout_second,
                     )
                     .await?,
                 ))
@@ -333,7 +336,13 @@ impl App {
                         }
 
                         if let Some(index) = self.record_table.table.selected_row.selected() {
-                            if index.saturating_add(1) % self.config.table_config.limit_size == 0
+                            let limit_size =
+                                if let Some(connection) = self.connections.selected_connection() {
+                                    connection.limit_size
+                                } else {
+                                    200
+                                };
+                            if index.saturating_add(1) % limit_size == 0
                                 && index >= self.record_table.table.rows.len() - 1
                             {
                                 if let Some((database, table)) =
