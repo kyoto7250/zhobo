@@ -15,10 +15,14 @@ pub struct MySqlPool {
 }
 
 impl MySqlPool {
-    pub async fn new(database_url: &str, limit_size: usize) -> anyhow::Result<Self> {
+    pub async fn new(
+        database_url: &str,
+        limit_size: usize,
+        timeout_second: u64,
+    ) -> anyhow::Result<Self> {
         Ok(Self {
             pool: MySqlPoolOptions::new()
-                .acquire_timeout(Duration::from_secs(5))
+                .acquire_timeout(Duration::from_secs(timeout_second))
                 .connect(database_url)
                 .await?,
             limit_size,
