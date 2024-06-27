@@ -50,14 +50,6 @@ impl ClipboardComponent {
         self.table = Some((database, table));
     }
 
-    pub fn content_height(&self) -> usize {
-        if let Some(s) = self.content.clone() {
-            s.matches('\n').count()
-        } else {
-            0
-        }
-    }
-
     pub fn unwrap_content(&self) -> String {
         self.content.clone().unwrap_or(String::from(""))
     }
@@ -90,9 +82,11 @@ impl PropertyTrait for ClipboardComponent {
             }));
 
         // can scroll = content.height - widget.height
-        // we can use `line_count` when this function is stable.
-        // see: https://github.com/ratatui-org/ratatui/issues/293
-        let content_height = self.content_height();
+        let paragraph = Paragraph::new(self.unwrap_content())
+            .scroll((self.position, 0))
+            .wrap(Wrap { trim: false });
+
+        let content_height = paragraph.line_count(chunks[0].width);
         let rect_height = (chunks[0].height - Self::MARGIN) as usize;
         let diff = (content_height).saturating_sub(rect_height);
         self.position = std::cmp::min(self.position, diff as u16);
@@ -104,12 +98,7 @@ impl PropertyTrait for ClipboardComponent {
         );
         self.scroll.draw(f, chunks[0]);
 
-        f.render_widget(
-            Paragraph::new(self.unwrap_content())
-                .scroll((self.position, 0))
-                .wrap(Wrap { trim: false }),
-            chunks[0],
-        );
+        f.render_widget(paragraph, chunks[0]);
 
         Ok(())
     }

@@ -13,7 +13,7 @@ keywords = ["database", "cli", "Rust", "tui", "terminal"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-ratatui = { version = "0.26.3" }
+ratatui = { version = "0.26.3", features = ["unstable-rendered-line-info"] }
 crossterm = "0.27.0"
 anyhow = "1.0.86"
 unicode-width = "0.1.13"
