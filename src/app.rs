@@ -12,6 +12,7 @@ use crate::components::{
 use crate::config::Config;
 use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool};
 use crate::event::Key;
+use anyhow::Context;
 use ratatui::layout::Flex;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
@@ -58,13 +59,19 @@ impl App {
 
     pub fn draw(&mut self, f: &mut Frame) -> anyhow::Result<()> {
         if let Focus::ConnectionList = self.focus {
-            self.connections.draw(
+            match self.connections.draw(
                 f,
                 Layout::default()
                     .constraints([Constraint::Percentage(100)])
                     .split(f.size())[0],
                 false,
-            )?;
+            ) {
+                Ok(()) => (),
+                Err(e) => {
+                    return Err(anyhow::anyhow!(e).context("from: ConnectionsComponent::draw"));
+                }
+            }
+
             self.error.draw(f, Rect::default(), false)?;
             self.help.draw(f, Rect::default(), false)?;
             return Ok(());
@@ -142,40 +149,35 @@ impl App {
                 pool.close().await;
             }
 
-            self.pool = if conn.is_mysql() {
-                Some(Box::new(
-                    MySqlPool::new(
-                        conn.database_url()?.as_str(),
-                        conn.limit_size,
-                        conn.timeout_second,
-                    )
-                    .await?,
-                ))
-            } else if conn.is_postgres() {
-                Some(Box::new(
-                    PostgresPool::new(
-                        conn.database_url()?.as_str(),
-                        conn.limit_size,
-                        conn.timeout_second,
-                    )
-                    .await?,
-                ))
-            } else {
-                Some(Box::new(
-                    SqlitePool::new(
-                        conn.database_url()?.as_str(),
-                        conn.limit_size,
-                        conn.timeout_second,
-                    )
-                    .await?,
-                ))
-            };
-            self.databases
-                .update(conn, self.pool.as_ref().unwrap())
-                .await?;
-            self.focus = Focus::DatabaseList;
-            self.record_table.reset();
-            self.tab.reset();
+            match conn.database_url() {
+                Ok(url) => {
+                    self.pool = if conn.is_mysql() {
+                        Some(Box::new(
+                            MySqlPool::new(url.as_str(), conn.limit_size, conn.timeout_second)
+                                .await?,
+                        ))
+                    } else if conn.is_postgres() {
+                        Some(Box::new(
+                            PostgresPool::new(url.as_str(), conn.limit_size, conn.timeout_second)
+                                .await?,
+                        ))
+                    } else {
+                        Some(Box::new(
+                            SqlitePool::new(url.as_str(), conn.limit_size, conn.timeout_second)
+                                .await?,
+                        ))
+                    };
+                    self.databases
+                        .update(conn, self.pool.as_ref().unwrap())
+                        .await?;
+                    self.focus = Focus::DatabaseList;
+                    self.record_table.reset();
+                    self.tab.reset();
+                }
+                Err(e) => {
+                    return Err(anyhow::anyhow!(e)).context("from Connection::database_url");
+                }
+            }
         }
         Ok(())
     }
