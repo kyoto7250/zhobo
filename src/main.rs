@@ -17,12 +17,14 @@ use crate::app::App;
 use crate::config::Config;
 use crate::event::{Event, Key};
 use anyhow::Result;
+use crossterm::execute;
 use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     ExecutableCommand,
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
-use std::io;
+use std::io::{self, stdout};
+use std::panic::{set_hook, take_hook};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -68,7 +70,23 @@ async fn main() -> anyhow::Result<()> {
 
 fn setup_terminal() -> Result<()> {
     enable_raw_mode()?;
+    init_panic_hook();
     io::stdout().execute(EnterAlternateScreen)?;
+    Ok(())
+}
+
+pub fn init_panic_hook() {
+    let original_hook = take_hook();
+    set_hook(Box::new(move |panic_info| {
+        // intentionally ignore errors here since we're already in a panic
+        let _ = restore_tui();
+        original_hook(panic_info);
+    }));
+}
+
+pub fn restore_tui() -> io::Result<()> {
+    disable_raw_mode()?;
+    execute!(stdout(), LeaveAlternateScreen)?;
     Ok(())
 }
 
