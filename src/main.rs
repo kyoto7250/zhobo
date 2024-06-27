@@ -30,20 +30,25 @@ use std::panic::{set_hook, take_hook};
 async fn main() -> anyhow::Result<()> {
     let value = crate::cli::parse();
     let config = Config::new(&value.config)?;
-
     setup_terminal()?;
 
     let backend = CrosstermBackend::new(io::stdout());
     let mut terminal = Terminal::new(backend)?;
     let events = event::Events::new(250);
     let mut app = App::new(config.clone());
-
     terminal.clear()?;
 
     loop {
         terminal.draw(|f| {
             if let Err(err) = app.draw(f) {
-                outln!(config #Error, "error: {}", err.to_string());
+                shutdown_terminal();
+                let mut source = err.source();
+                while let Some(err) = source {
+                    eprintln!("Caused by: {}", err);
+                    source = err.source();
+                }
+                eprintln!("Failed by: {}", err);
+
                 std::process::exit(1);
             }
         })?;
@@ -64,7 +69,6 @@ async fn main() -> anyhow::Result<()> {
 
     shutdown_terminal();
     terminal.show_cursor()?;
-
     Ok(())
 }
 

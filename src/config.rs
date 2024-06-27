@@ -255,18 +255,21 @@ impl Connection {
     fn build_database_url(&self, password: String) -> anyhow::Result<String> {
         match self.r#type {
             DatabaseType::MySql => {
-                let user = self
-                    .user
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type mysql needs the user field"))?;
-                let host = self
-                    .host
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type mysql needs the host field"))?;
-                let port = self
-                    .port
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type mysql needs the port field"))?;
+                let user = self.user.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type mysql needs the user field in Connection::build_database_url"
+                    )
+                })?;
+                let host = self.host.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type mysql needs the host field in Connection::build_database_url"
+                    )
+                })?;
+                let port = self.port.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type mysql needs the port field in Connection::build_database_url"
+                    )
+                })?;
                 let unix_domain_socket = self
                     .valid_unix_domain_socket()
                     .map_or(String::new(), |uds| format!("?socket={}", uds));
@@ -292,18 +295,21 @@ impl Connection {
                 }
             }
             DatabaseType::Postgres => {
-                let user = self
-                    .user
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type postgres needs the user field"))?;
-                let host = self
-                    .host
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type postgres needs the host field"))?;
-                let port = self
-                    .port
-                    .as_ref()
-                    .ok_or_else(|| anyhow::anyhow!("type postgres needs the port field"))?;
+                let user = self.user.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type postgres needs the user field in Connection::build_database_url"
+                    )
+                })?;
+                let host = self.host.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type postgres needs the host field in Connection::build_database_url"
+                    )
+                })?;
+                let port = self.port.as_ref().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "type postgres needs the port field in Connection::build_database_url"
+                    )
+                })?;
 
                 if let Some(unix_domain_socket) = self.valid_unix_domain_socket() {
                     match self.database.as_ref() {
@@ -343,9 +349,15 @@ impl Connection {
             }
             DatabaseType::Sqlite => {
                 let path = self.path.as_ref().map_or(
-                    Err(anyhow::anyhow!("type sqlite needs the path field")),
+                    Err(anyhow::anyhow!(
+                        "type sqlite needs the path field in Connection::build_database_url"
+                    )),
                     |path| {
-                        expand_path(path).ok_or_else(|| anyhow::anyhow!("cannot expand file path"))
+                        expand_path(path).ok_or_else(|| {
+                            anyhow::anyhow!(
+                                "cannot expand file path in Connection::build_database_url"
+                            )
+                        })
                     },
                 )?;
 
@@ -355,16 +367,14 @@ impl Connection {
     }
 
     pub fn database_url_with_name(&self) -> anyhow::Result<String> {
-        let database_url = self.masked_database_url()?;
-
-        Ok(match &self.name {
-            Some(name) => format!(
-                "[{name}] {database_url}",
-                name = name,
-                database_url = database_url
-            ),
-            None => database_url,
-        })
+        match self.masked_database_url() {
+            Ok(url) => Ok(match &self.name {
+                Some(name) => format!("[{name}] {database_url}", name = name, database_url = url),
+                None => url,
+            }),
+            Err(e) => Err(anyhow::anyhow!(e)
+                .context("Failed to masked_database_url in Connection::database_url_with_name")),
+        }
     }
 
     pub fn is_mysql(&self) -> bool {

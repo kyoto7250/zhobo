@@ -87,10 +87,13 @@ impl StatefulDrawableComponent for ConnectionsComponent {
         let conns = &self.connections;
         let mut connections: Vec<ListItem> = Vec::new();
         for c in conns {
-            connections.push(
-                ListItem::new(vec![Line::from(Span::raw(c.database_url_with_name()?))])
-                    .style(Style::default()),
-            )
+            match c.database_url_with_name() {
+                Ok(url) => connections
+                    .push(ListItem::new(vec![Line::from(Span::raw(url))]).style(Style::default())),
+                Err(e) => {
+                    return Err(anyhow::anyhow!(e).context("Failed to database_url_with_name"));
+                }
+            }
         }
         let connections = List::new(connections)
             .block(Block::default().borders(Borders::ALL).title("Connections"))
