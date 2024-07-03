@@ -182,13 +182,9 @@ impl App {
         Ok(())
     }
 
-    async fn update_record_table(
-        &mut self,
-        orders: Option<String>,
-        header_icons: Option<Vec<String>>,
-        hold_cursor_position: bool,
-    ) -> anyhow::Result<()> {
+    async fn update_record_table(&mut self, hold_cursor_position: bool) -> anyhow::Result<()> {
         if let Some((database, table)) = self.databases.tree().selected_table() {
+            let order_query = self.record_table.table.generate_order_query();
             let (headers, records) = self
                 .pool
                 .as_ref()
@@ -202,7 +198,7 @@ impl App {
                     } else {
                         Some(self.record_table.filter.input_str())
                     },
-                    orders,
+                    order_query,
                 )
                 .await?;
             let total_row_count = self
@@ -219,10 +215,12 @@ impl App {
                     },
                 )
                 .await?;
+
+            let header_icons = self.record_table.table.generate_header_icons(headers.len());
             self.record_table.update(
                 records,
                 Some(total_row_count),
-                self.concat_headers(headers, header_icons),
+                self.concat_headers(headers, Some(header_icons)),
                 database.clone(),
                 table.clone(),
                 hold_cursor_position,
@@ -311,10 +309,7 @@ impl App {
                             && !self.record_table.table.headers.is_empty()
                         {
                             self.record_table.table.add_order();
-                            let order_query = self.record_table.table.generate_order_query();
-                            let header_icons = self.record_table.table.generate_header_icons();
-                            self.update_record_table(order_query, Some(header_icons), true)
-                                .await?;
+                            self.update_record_table(true).await?;
                             return Ok(EventState::Consumed);
                         };
 
@@ -327,10 +322,7 @@ impl App {
                         if key == self.config.key_config.enter && self.record_table.filter_focused()
                         {
                             self.record_table.focus = crate::components::record_table::Focus::Table;
-                            let order_query = self.record_table.table.generate_order_query();
-                            let header_icons = self.record_table.table.generate_header_icons();
-                            self.update_record_table(order_query, Some(header_icons), false)
-                                .await?;
+                            self.update_record_table(false).await?;
                         }
 
                         if self.record_table.table.eod {
@@ -415,9 +407,15 @@ impl App {
         if let Some(header_icons) = &header_icons {
             let mut new_headers = vec![String::new(); headers.len()];
             for (index, header) in headers.iter().enumerate() {
-                new_headers[index] = format!("{} {}", header, header_icons[index])
-                    .trim()
-                    .to_string();
+                // It does not support increasing or decreasing table columns using filter.
+                // Rewrite when implementing column deletion
+                new_headers[index] = format!(
+                    "{} {}",
+                    header,
+                    header_icons.get(index).unwrap_or(&String::from(""))
+                )
+                .trim()
+                .to_string();
             }
             return new_headers;
         }
