@@ -20,6 +20,9 @@ use unicode_width::UnicodeWidthStr;
 
 #[derive(Debug, PartialEq)]
 struct Order {
+    // NOTE:
+    // In order to handle increases and decreases in columns,
+    // it is better to set the column name as a String instead of column_number.
     pub column_number: usize,
     pub is_asc: bool,
 }
@@ -69,11 +72,12 @@ impl OrderManager {
 
     fn generate_header_icons(&mut self, header_length: usize) -> Vec<String> {
         let mut header_icons = vec![String::new(); header_length];
-
         for (index, order) in self.orders.iter().enumerate() {
             let arrow = if order.is_asc { "↑" } else { "↓" };
-            header_icons[order.column_number - 1] =
-                format!("{arrow}{number}", arrow = arrow, number = index + 1);
+            if header_icons.len() > order.column_number - 1 {
+                header_icons[order.column_number - 1] =
+                    format!("{arrow}{number}", arrow = arrow, number = index + 1);
+            }
         }
 
         header_icons
@@ -190,8 +194,8 @@ impl TableComponent {
         self.orders.generate_order_query()
     }
 
-    pub fn generate_header_icons(&mut self) -> Vec<String> {
-        self.orders.generate_header_icons(self.headers.len())
+    pub fn generate_header_icons(&mut self, header_length: usize) -> Vec<String> {
+        self.orders.generate_header_icons(header_length)
     }
 
     pub fn end(&mut self) {
