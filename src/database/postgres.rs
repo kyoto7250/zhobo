@@ -368,7 +368,7 @@ impl Pool for PostgresPool {
             )
         } else {
             format!(
-                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}"#,
+                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}""#,
                 database = database.name,
                 table = table.name,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
@@ -527,10 +527,11 @@ impl Pool for PostgresPool {
         Ok(foreign_keys)
     }
 
-    async fn get_definition(&self, database: &Database, table: &Table) -> anyhow::Result<String> {
-        let query = format!("SHOW CREATE TABLE `{}`.`{}`;", database.name, table.name);
-        let row = sqlx::query(query.as_str()).fetch_one(&self.pool).await?;
-        Ok(row.get::<String, usize>(1))
+    async fn get_definition(&self, _database: &Database, _table: &Table) -> anyhow::Result<String> {
+        Ok("Sorry, Postgres SQL is not supported Table Definitions.\n\
+            Please see this issue if you want to implement this feature, see here!\n\
+            https://github.com/kyoto7250/zhobo/issues/94"
+            .to_owned())
     }
 
     async fn close(&self) {
