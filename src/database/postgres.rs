@@ -368,7 +368,7 @@ impl Pool for PostgresPool {
             )
         } else {
             format!(
-                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}"#,
+                r#"SELECT COUNT(*) FROM "{database}"."{table_schema}"."{table}""#,
                 database = database.name,
                 table = table.name,
                 table_schema = table.schema.clone().unwrap_or_else(|| "public".to_string()),
