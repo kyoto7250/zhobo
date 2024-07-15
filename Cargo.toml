@@ -1,6 +1,6 @@
 [package]
 name = "zhobo"
-version = "0.0.2"
+version = "0.1.0"
 authors = ["Kyoto7250 <kyoto7250@aol.com>"]
 edition = "2021"
 license = "MIT"
