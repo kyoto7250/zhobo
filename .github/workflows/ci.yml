@@ -147,7 +147,8 @@ jobs:
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
       - name: Generate coverage
-        run: cargo make coverage
+        run: |
+          cargo llvm-cov --lcov --output-patt target/lcov.info --no-default-features --features=crossterm
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v4
         with:
