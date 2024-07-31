@@ -19,11 +19,17 @@
 ## installation
 
 ## homebrew
+```bash
+# https://github.com/kyoto7250/homebrew-zhobo
+brew tap kyoto7250/zhobo
+brew install zhobo
+```
 
 ## cargo
 ```bash
 cargo install zhobo
 ```
+
 
 ## default keymap
 
