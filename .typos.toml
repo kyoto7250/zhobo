@@ -1,0 +1,14 @@
+# configuration for https://github.com/crate-ci/typos
+
+
+[default.extend-words]
+syntact = "syntact"
+zhobo = "zhobo"
+ratatui = "ratatui"
+ba = "ba" # src/components/databases.rs
+
+
+[type.md]
+extend-ignore-re = [
+  "\\[[[:xdigit:]]{7}\\]\\(https://github.com/ratatui-org/ratatui/commit/[[:xdigit:]]{40}\\)",
+]

@@ -375,7 +375,7 @@ mod test {
     }
 
     #[test]
-    fn test_filterd_tree_item_to_span() {
+    fn test_filtered_tree_item_to_span() {
         const WIDTH: u16 = 10;
         assert_eq!(
             DatabasesComponent::tree_item_to_span(
