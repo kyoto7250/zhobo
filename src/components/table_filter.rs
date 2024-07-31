@@ -193,7 +193,7 @@ impl Component for TableFilterComponent {
     fn event(&mut self, key: Key) -> Result<EventState> {
         let input_str: String = self.input.iter().collect();
 
-        // apply comletion candidates
+        // apply completion candidates
         if key == self.key_config.enter {
             return self.complete();
         }

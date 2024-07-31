@@ -148,7 +148,7 @@ impl TableComponent {
         headers: Vec<String>,
         database: Database,
         table: DTable,
-        hold_cusor_position: bool,
+        hold_cursor_position: bool,
     ) {
         self.selected_row.select(None);
         if !rows.is_empty() {
@@ -157,7 +157,7 @@ impl TableComponent {
         self.headers = headers;
         self.rows = rows;
         self.total_row_count = total_row_count;
-        self.selected_column = if hold_cusor_position {
+        self.selected_column = if hold_cursor_position {
             self.selected_column
         } else {
             0

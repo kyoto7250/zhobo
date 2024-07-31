@@ -375,7 +375,7 @@ mod test {
     }
 
     #[test]
-    fn test_filterd_tree_item_to_span() {
+    fn test_filtered_tree_item_to_span() {
         const WIDTH: u16 = 10;
         assert_eq!(
             DatabasesComponent::tree_item_to_span(
@@ -397,7 +397,7 @@ mod test {
                 Some("rb".to_string()),
             ),
             Line::from(vec![
-                Span::raw(format!("  {}", "ba")),
+                Span::raw(format!("  {}", "by")),
                 Span::styled("rb", Style::default().fg(Color::Blue)),
                 Span::raw(format!("{:w$}", "az", w = WIDTH as usize))
             ])
@@ -423,7 +423,7 @@ mod test {
                 Some("rb".to_string()),
             ),
             Line::from(vec![
-                Span::styled(format!("  {}", "ba"), Style::default().bg(Color::Blue)),
+                Span::styled(format!("  {}", "by"), Style::default().bg(Color::Blue)),
                 Span::styled("rb", Style::default().bg(Color::Blue).fg(Color::Blue)),
                 Span::styled(
                     format!("{:w$}", "az", w = WIDTH as usize),
