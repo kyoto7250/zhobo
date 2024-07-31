@@ -397,7 +397,7 @@ mod test {
                 Some("rb".to_string()),
             ),
             Line::from(vec![
-                Span::raw(format!("  {}", "by")),
+                Span::raw(format!("  {}", "ba")),
                 Span::styled("rb", Style::default().fg(Color::Blue)),
                 Span::raw(format!("{:w$}", "az", w = WIDTH as usize))
             ])
@@ -423,7 +423,7 @@ mod test {
                 Some("rb".to_string()),
             ),
             Line::from(vec![
-                Span::styled(format!("  {}", "by"), Style::default().bg(Color::Blue)),
+                Span::styled(format!("  {}", "ba"), Style::default().bg(Color::Blue)),
                 Span::styled("rb", Style::default().bg(Color::Blue).fg(Color::Blue)),
                 Span::styled(
                     format!("{:w$}", "az", w = WIDTH as usize),

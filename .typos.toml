@@ -5,6 +5,7 @@
 syntact = "syntact"
 zhobo = "zhobo"
 ratatui = "ratatui"
+ba = "ba" # src/components/databases.rs
 
 
 [type.md]
