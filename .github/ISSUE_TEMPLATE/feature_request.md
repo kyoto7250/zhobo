@@ -7,6 +7,16 @@ assignees: ''
 
 ---
 
+**Your OS:**
+- [ ] Mac OS
+- [ ] Windows
+- [ ] Linux
+
+**Your Database:**
+- [ ] MySQL
+- [ ] Postgres
+- [ ] Sqlite3
+
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
