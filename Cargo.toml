@@ -14,7 +14,7 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 ratatui = { version = "0.26.3", features = ["unstable-rendered-line-info"] }
-crossterm = "0.27.0"
+crossterm = "0.28.0"
 anyhow = "1.0.86"
 unicode-width = "0.1.13"
 sqlx = { version = "0.8.1", features = ["mysql", "postgres", "sqlite", "chrono", "rust_decimal", "runtime-tokio-rustls", "json"], default-features = false }
