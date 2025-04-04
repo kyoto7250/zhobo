@@ -1,6 +1,7 @@
 use super::{Component, EventState, StatefulDrawableComponent};
 use crate::components::command::CommandInfo;
-use crate::config::{Connection, KeyConfig};
+use crate::config::KeyConfig;
+use crate::connection::Connection;
 use crate::event::Key;
 use anyhow::Result;
 use ratatui::{

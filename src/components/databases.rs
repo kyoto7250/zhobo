@@ -3,7 +3,8 @@ use super::{
     EventState,
 };
 use crate::components::command::{self, CommandInfo};
-use crate::config::{Connection, KeyConfig};
+use crate::config::KeyConfig;
+use crate::connection::Connection;
 use crate::database::Pool;
 use crate::event::Key;
 use crate::tree::{Database, DatabaseTree, DatabaseTreeItem};
