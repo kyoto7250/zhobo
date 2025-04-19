@@ -1,4 +1,4 @@
-use crate::connection::Connection;
+use crate::connection::{Connection, ReadConnection};
 use crate::key_bind::KeyBind;
 use crate::log::LogLevel;
 use crate::Key;
@@ -24,17 +24,15 @@ pub struct CliConfig {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct ReadConfig {
-    pub conn: Vec<Connection>,
+    pub conn: Vec<ReadConnection>,
     #[serde(default)]
     pub log_level: LogLevel,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Clone)]
 pub struct Config {
     pub conn: Vec<Connection>,
-    #[serde(default)]
     pub key_config: KeyConfig,
-    #[serde(default)]
     pub log_level: LogLevel,
 }
 
@@ -169,7 +167,11 @@ impl Config {
     fn build(read_config: ReadConfig, key_bind_path: PathBuf) -> Self {
         let key_bind = KeyBind::load(key_bind_path).unwrap();
         Config {
-            conn: read_config.conn,
+            conn: read_config
+                .conn
+                .into_iter()
+                .map(|c| Connection::from(c))
+                .collect::<Vec<Connection>>(),
             log_level: read_config.log_level,
             key_config: KeyConfig::from(key_bind),
         }

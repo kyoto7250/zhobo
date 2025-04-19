@@ -55,7 +55,7 @@ impl DatabasesComponent {
     }
 
     pub async fn update(&mut self, connection: &Connection, pool: &Box<dyn Pool>) -> Result<()> {
-        let databases = match &connection.database {
+        let databases = match connection.get_database() {
             Some(database) => vec![Database::new(
                 database.clone(),
                 pool.get_tables(database.clone()).await?,
