@@ -3,6 +3,7 @@ mod cli;
 mod clipboard;
 mod components;
 mod config;
+mod connection;
 mod database;
 mod event;
 mod key_bind;

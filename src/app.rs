@@ -10,6 +10,7 @@ use crate::components::{
     CommandInfo, Component as _, DrawableComponent as _, EventState, StatefulDrawableComponent,
 };
 use crate::config::Config;
+use crate::connection::{default_limit_size, Connection};
 use crate::database::{MySqlPool, Pool, PostgresPool, SqlitePool};
 use crate::event::Key;
 use anyhow::Context;
@@ -151,21 +152,19 @@ impl App {
 
             match conn.database_url() {
                 Ok(url) => {
-                    self.pool = if conn.is_mysql() {
-                        Some(Box::new(
+                    self.pool = match conn {
+                        Connection::MySql(conn) => Some(Box::new(
                             MySqlPool::new(url.as_str(), conn.limit_size, conn.timeout_second)
                                 .await?,
-                        ))
-                    } else if conn.is_postgres() {
-                        Some(Box::new(
+                        )),
+                        Connection::Postgres(conn) => Some(Box::new(
                             PostgresPool::new(url.as_str(), conn.limit_size, conn.timeout_second)
                                 .await?,
-                        ))
-                    } else {
-                        Some(Box::new(
+                        )),
+                        Connection::Sqlite(conn) => Some(Box::new(
                             SqlitePool::new(url.as_str(), conn.limit_size, conn.timeout_second)
                                 .await?,
-                        ))
+                        )),
                     };
                     self.databases
                         .update(conn, self.pool.as_ref().unwrap())
@@ -332,9 +331,13 @@ impl App {
                         if let Some(index) = self.record_table.table.selected_row.selected() {
                             let limit_size =
                                 if let Some(connection) = self.connections.selected_connection() {
-                                    connection.limit_size
+                                    match connection {
+                                        Connection::MySql(conn) => conn.limit_size,
+                                        Connection::Postgres(conn) => conn.limit_size,
+                                        Connection::Sqlite(conn) => conn.limit_size,
+                                    }
                                 } else {
-                                    200
+                                    default_limit_size()
                                 };
                             if index.saturating_add(1) % limit_size == 0
                                 && index >= self.record_table.table.rows.len() - 1
