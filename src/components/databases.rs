@@ -3,7 +3,8 @@ use super::{
     EventState,
 };
 use crate::components::command::{self, CommandInfo};
-use crate::config::{Connection, KeyConfig};
+use crate::config::KeyConfig;
+use crate::connection::Connection;
 use crate::database::Pool;
 use crate::event::Key;
 use crate::tree::{Database, DatabaseTree, DatabaseTreeItem};
@@ -54,7 +55,7 @@ impl DatabasesComponent {
     }
 
     pub async fn update(&mut self, connection: &Connection, pool: &Box<dyn Pool>) -> Result<()> {
-        let databases = match &connection.database {
+        let databases = match connection.get_database() {
             Some(database) => vec![Database::new(
                 database.clone(),
                 pool.get_tables(database.clone()).await?,
