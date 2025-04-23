@@ -453,7 +453,7 @@ mod test {
                 port: 3306,
                 password: Some("password".to_owned()),
                 database: Some("city".to_owned()),
-                unix_domain_socket: "/tmp/mysql.sock".to_owned(),
+                unix_domain_socket: Some(Path::new("/tmp/mysql.sock").to_path_buf()),
                 limit_size: 200,
                 timeout_second: 5,
             });
@@ -541,7 +541,7 @@ mod test {
                 port: 3306,
                 password: Some("password".to_owned()),
                 database: Some("city".to_owned()),
-                unix_domain_socket: Some("/tmp".to_owned()),
+                unix_domain_socket: Some(Path::new("/tmp").to_path_buf()),
                 limit_size: 200,
                 timeout_second: 5,
             });
@@ -557,7 +557,8 @@ mod test {
         use super::*;
 
         #[test]
-        fn database_url() {
+        #[cfg(unix)]
+        fn database_url_in_unix() {
             let sqlite_conn = Connection::Sqlite(SqliteConnection {
                 name: None,
                 path: PathBuf::from("/home/user/sqlite3.db"),
@@ -570,7 +571,8 @@ mod test {
         }
 
         #[test]
-        fn database_url_with_name() {
+        #[cfg(unix)]
+        fn database_url_in_unix_with_name() {
             let sqlite_conn = Connection::Sqlite(SqliteConnection {
                 name: Some("my_sqlite_connection".to_owned()),
                 path: PathBuf::from("/home/user/sqlite3.db"),
@@ -599,6 +601,23 @@ mod test {
             assert_eq!(
                 sqlite_result,
                 "sqlite://\\home\\user\\sqlite3.db".to_owned()
+            );
+        }
+
+        #[test]
+        #[cfg(windows)]
+        fn database_url_in_windows_with_name() {
+            let sqlite_conn = Connection::Sqlite(SqliteConnection {
+                name: Some("my_sqlite_connection".to_owned()),
+                path: PathBuf::from("/home/user/sqlite3.db"),
+                limit_size: 200,
+                timeout_second: 5,
+            });
+
+            let sqlite_result = sqlite_conn.database_url_with_name().unwrap();
+            assert_eq!(
+                sqlite_result,
+                "[my_sqlite_connection] sqlite://\\home\\user\\sqlite3.db".to_owned()
             );
         }
     }
@@ -639,22 +658,22 @@ mod test {
         env::set_var("TEST", test_env);
 
         assert_eq!(
-            expand_path(&Path::new("%HOMEPATH%/foo")),
+            expand_path(Path::new("%HOMEPATH%/foo")),
             Some(PathBuf::from(&home).join("foo"))
         );
 
         assert_eq!(
-            expand_path(&Path::new("%HOMEPATH%/foo/%TEST%/bar")),
+            expand_path(Path::new("%HOMEPATH%/foo/%TEST%/bar")),
             Some(PathBuf::from(&home).join("foo").join(test_env).join("bar"))
         );
 
         assert_eq!(
-            expand_path(&Path::new("~/foo")),
+            expand_path(Path::new("~/foo")),
             Some(PathBuf::from(&dirs_next::home_dir().unwrap()).join("foo"))
         );
 
         assert_eq!(
-            expand_path(&Path::new("~/foo/~/bar")),
+            expand_path(Path::new("~/foo/~/bar")),
             Some(
                 PathBuf::from(&dirs_next::home_dir().unwrap())
                     .join("foo")
